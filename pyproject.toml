@@ -1,0 +1,15 @@
+[project]
+name = "elefast-workspace"
+description = "The uv workspace for the elefast family of packages"
+version = "0.1.0"
+requires-python = ">=3.14"
+dependencies = []
+
+[tool.uv.workspace]
+members = [
+    "packages/elefast",
+    "packages/pytest-elefast",
+    "packages/elefast-docker",
+    "packages/elefast-core",
+    "packages/foo",
+]

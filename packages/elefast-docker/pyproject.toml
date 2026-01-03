@@ -1,0 +1,30 @@
+[project]
+name = "elefast-docker"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Niclas van Eyk", email = "niclas.eyk@gmail.com" }
+]
+requires-python = ">=3.14"
+dependencies = [
+    "docker>=7.1.0",
+]
+
+[project.scripts]
+elefast-docker = "elefast_docker.cli:app"
+
+[project.optional-dependencies]
+cli = [
+    "typer>=0.21.0",
+]
+
+[build-system]
+requires = ["uv_build>=0.9.18,<0.10.0"]
+build-backend = "uv_build"
+
+
+[dependency-groups]
+dev = [
+    "types-docker>=7.1.0.20251202",
+]
