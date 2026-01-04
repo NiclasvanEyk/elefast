@@ -8,8 +8,7 @@ dependencies = []
 [tool.uv.workspace]
 members = [
     "packages/elefast",
-    "packages/pytest-elefast",
-    "packages/elefast-docker",
     "packages/elefast-core",
-    "packages/foo",
+    "packages/elefast-docker",
+    "examples/async-fastapi",
 ]

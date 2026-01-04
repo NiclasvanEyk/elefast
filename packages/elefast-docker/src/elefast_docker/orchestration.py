@@ -11,16 +11,18 @@ def get_docker() -> DockerClient:
 
 
 def ensure_db_server_started(
-    docker: DockerClient | None = None, config: Configuration | None = None
+    docker: DockerClient | None = None,
+    config: Configuration | None = None,
+    keep_container_around: bool = True,
 ) -> Container:
     if docker is None:
         docker = get_docker()
     if config is None:
         config = Configuration()
 
-    if container := get_db_server_container(docker, config.container_name):
+    if container := get_db_server_container(docker, config.container.name):
         return container
-    return start_db_server_container(docker, config)
+    return start_db_server_container(docker, config, keep_container_around)
 
 
 def get_db_server_container(docker: DockerClient, name: str) -> Container | None:
@@ -30,12 +32,14 @@ def get_db_server_container(docker: DockerClient, name: str) -> Container | None
             return container
 
 
-def start_db_server_container(docker: DockerClient, config: Configuration) -> Container:
+def start_db_server_container(
+    docker: DockerClient, config: Configuration, keep_container_around: bool
+) -> Container:
     optimizations = config.optimizations
     command: list[str] = []
     env: dict[str, str] = {
-        "POSTGRES_USER": config.postgres_user,
-        "POSTGRES_PASSWORD": config.postgres_password,
+        "POSTGRES_USER": config.credentials.user,
+        "POSTGRES_PASSWORD": config.credentials.password,
     }
 
     if optimizations.fsync_off:
@@ -67,12 +71,13 @@ def start_db_server_container(docker: DockerClient, config: Configuration) -> Co
         env["POSTGRES_INITDB_ARGS"] = "--no-locale"
 
     return docker.containers.run(
-        image=f"{config.container_image}:{config.container_version}",
-        name=config.container_name,
+        image=f"{config.container.image}:{config.container.version}",
+        name=config.container.name,
+        ports=config.container.ports,
         environment=env,
         tmpfs={"/var/lib/postgresql": f"rw,size={optimizations.tmpfs_size_mb}m"}
         if optimizations.tmpfs_size_mb is not None
         else {},
-        remove=True,  # NOTE: Probably needs to be configurable for debugging
+        remove=not keep_container_around,
         detach=True,
     )

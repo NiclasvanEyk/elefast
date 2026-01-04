@@ -6,10 +6,19 @@ readme = "README.md"
 authors = []
 requires-python = ">=3.14"
 dependencies = [
-    "sqlalchemy>=2.0.45",
+    "elefast-core",
+]
+
+[project.optional-dependencies]
+docker = [
+    "elefast-docker",
 ]
 
 [build-system]
 requires = ["uv_build>=0.9.18,<0.10.0"]
 build-backend = "uv_build"
+
+[tool.uv.sources]
+elefast-core = { workspace = true }
+elefast-docker= { workspace = true }
 

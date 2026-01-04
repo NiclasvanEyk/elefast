@@ -1,0 +1,25 @@
+[project]
+name = "elefast-example-fastapi-async"
+version = "0.1.0"
+description = "An example showing how to test your FastAPI app with elefast"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "asyncpg>=0.31.0",
+    "fastapi[standard]>=0.128.0",
+    "sqlalchemy[asyncio]>=2.0.45",
+]
+
+[dependency-groups]
+dev = [
+    "anyio>=4.12.0",
+    "elefast[docker]",
+    "pytest>=9.0.2",
+]
+
+[build-system]
+requires = ["uv_build>=0.9.18,<0.10.0"]
+build-backend = "uv_build"
+
+[tool.uv.sources]
+elefast = { workspace = true }
