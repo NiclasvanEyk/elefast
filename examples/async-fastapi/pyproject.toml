@@ -14,7 +14,10 @@ dependencies = [
 dev = [
     "anyio>=4.12.0",
     "elefast[docker]",
+    "opentelemetry-distro>=0.60b1",
+    "opentelemetry-instrumentation-sqlalchemy>=0.60b1",
     "pytest>=9.0.2",
+    "pytest-opentelemetry>=1.1.0",
 ]
 
 [build-system]
