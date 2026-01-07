@@ -2,6 +2,7 @@ from fastapi.testclient import TestClient
 from os import getenv
 
 import pytest
+import pytest_asyncio
 from elefast import MetaDataBasedAsyncDatabaseServer, AsyncDatabaseServer, AsyncDatabase
 from elefast.docker import postgres as start_and_get_postgres_container_url
 
@@ -17,7 +18,7 @@ def postgres():
     return MetaDataBasedAsyncDatabaseServer(url, Base.metadata)
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def db(postgres: AsyncDatabaseServer, monkeypatch: pytest.MonkeyPatch):
     async with await postgres.create_database() as database:
         db_url = database.url.render_as_string(hide_password=False)
@@ -25,13 +26,13 @@ async def db(postgres: AsyncDatabaseServer, monkeypatch: pytest.MonkeyPatch):
         yield database
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def db_connection(db: AsyncDatabase):
     async with db.engine.begin() as connection:
         yield connection
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def db_session(db: AsyncDatabase):
     async with db.session() as session:
         yield session

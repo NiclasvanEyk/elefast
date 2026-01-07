@@ -6,7 +6,7 @@ from elefast_example_fastapi_async.database import Post
 from elefast_example_fastapi_async.app import PostExcerpt, FullPost
 
 
-@pytest.mark.anyio
+@pytest.mark.asyncio
 async def test_get_posts(db_session: AsyncSession, backend: TestClient):
     db_session.add_all(
         [Post(slug="an-article", headline="Hello World!", body="The article content.")]
@@ -25,14 +25,14 @@ async def test_get_posts(db_session: AsyncSession, backend: TestClient):
     assert excerpt.excerpt == "The article content."
 
 
-@pytest.mark.anyio
+@pytest.mark.asyncio
 async def test_get_missing_post(backend: TestClient):
     # NOTE: No posts in the database
     response = backend.get("/posts/non-existent")
     assert response.status_code == 404
 
 
-@pytest.mark.anyio
+@pytest.mark.asyncio
 async def test_get_existing_post(db_session: AsyncSession, backend: TestClient):
     db_session.add_all(
         [Post(slug="an-article", headline="Hello World!", body="The article content.")]
