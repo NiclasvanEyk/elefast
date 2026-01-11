@@ -11,4 +11,5 @@ members = [
     "packages/elefast-core",
     "packages/elefast-docker",
     "packages/elefast-example-fastapi-async",
+    "packages/elefast-docs",
 ]
