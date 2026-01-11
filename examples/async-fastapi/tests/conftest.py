@@ -10,12 +10,14 @@ from elefast_example_fastapi_async.database import Base
 from elefast_example_fastapi_async.app import app
 
 
-@pytest.fixture(scope="session")
-def postgres():
+@pytest_asyncio.fixture(scope="session", loop_scope="session")
+async def postgres():
     url = getenv("TESTING_DB_URL") or start_and_get_postgres_container_url(
         driver="asyncpg"
     )
-    return MetaDataBasedAsyncDatabaseServer(url, Base.metadata)
+    server = MetaDataBasedAsyncDatabaseServer(url, Base.metadata)
+    await server.ensure_is_ready()
+    return server
 
 
 @pytest_asyncio.fixture

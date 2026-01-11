@@ -9,6 +9,7 @@ from elefast_core.asyncio._utils import (
     build_engine,
     drop_async_database,
     prepare_async_database,
+    wait_for_async_db,
 )
 from elefast_core.asyncio.abstract import AsyncDatabase, AsyncDatabaseServer
 
@@ -21,6 +22,10 @@ class BasicAsyncDatabaseServer(AsyncDatabaseServer):
     @property
     def url(self) -> URL:
         return self._engine.url
+
+    @override
+    async def ensure_is_ready(self) -> None:
+        await wait_for_async_db(self._engine)
 
     @override
     async def create_database(self) -> AsyncDatabase:

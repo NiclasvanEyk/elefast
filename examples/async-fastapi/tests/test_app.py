@@ -1,3 +1,4 @@
+from itertools import product
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -7,7 +8,11 @@ from elefast_example_fastapi_async.app import PostExcerpt, FullPost
 
 
 @pytest.mark.asyncio
-async def test_get_posts(db_session: AsyncSession, backend: TestClient):
+@pytest.mark.parametrize(
+    "a,b",
+    list(product(range(1, 10), range(1, 10))),
+)
+async def test_get_posts(a, b, db_session: AsyncSession, backend: TestClient):
     db_session.add_all(
         [Post(slug="an-article", headline="Hello World!", body="The article content.")]
     )

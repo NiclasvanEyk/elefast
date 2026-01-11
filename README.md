@@ -1,10 +1,10 @@
-# Elefast
+# Elefast 🐘⚡
 
 Using an actual database for testing is nice, but setting everything up can be a pain.
 Generating the schema, isolating the state, and supporting parallel execution while keeping everything reasonably quick.
 Elefast helps you by providing utilities for all of these tasks
 
-## Opinions
+## Context
 
 - You use Postgres and SQLAlchemy
 - Your database schema can be created using `YourBaseClass.metadata.create_all`
@@ -13,7 +13,7 @@ Elefast helps you by providing utilities for all of these tasks
 ## Installation
 
 ```shell
-uv add 'elefast[pytest,docker]'
+uv add 'elefast[docker]'
 ```
 
 ## Getting Started

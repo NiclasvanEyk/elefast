@@ -13,7 +13,7 @@ def get_docker() -> DockerClient:
 def ensure_db_server_started(
     docker: DockerClient | None = None,
     config: Configuration | None = None,
-    keep_container_around: bool = True,
+    keep_container_around: bool = False,
 ) -> Container:
     if docker is None:
         docker = get_docker()

@@ -45,6 +45,10 @@ class AsyncDatabaseServer(ABC):
         pass
 
     @abstractmethod
+    async def ensure_is_ready(self) -> None:
+        pass
+
+    @abstractmethod
     async def create_database(self) -> AsyncDatabase:
         pass
 
