@@ -1,3 +1,6 @@
+from pathlib import Path
+from tempfile import gettempdir
+from filelock import FileLock
 from docker import DockerClient
 from elefast_docker import ensure_db_server_started
 from elefast_docker.configuration import Configuration
@@ -12,9 +15,11 @@ def postgres(
 ) -> URL:
     docker = docker if docker else DockerClient.from_env()
     config = config if config else Configuration()
-    ensure_db_server_started(
-        docker=docker, config=config, keep_container_around=keep_container_around
-    )
+
+    with FileLock(Path(gettempdir()) / "elefast-docker.lock"):
+        ensure_db_server_started(
+            docker=docker, config=config, keep_container_around=keep_container_around
+        )
     return URL.create(
         drivername=f"postgresql+{driver}",
         username=config.credentials.user,

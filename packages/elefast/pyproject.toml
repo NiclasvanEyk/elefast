@@ -12,6 +12,7 @@ dependencies = [
 [project.optional-dependencies]
 docker = [
     "elefast-docker",
+    "filelock>=3.20.3",
 ]
 
 [project.scripts]
