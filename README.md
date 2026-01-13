@@ -1,3 +1,6 @@
+> [!WARNING]  
+> Not even alpha-level software, that hasn't even made its way to PyPi yet.
+
 # Elefast 🐘⚡
 
 Using an actual database for testing is nice, but setting everything up can be a pain.
