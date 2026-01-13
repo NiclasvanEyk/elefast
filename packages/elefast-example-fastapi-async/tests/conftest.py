@@ -3,7 +3,7 @@ from os import getenv
 
 import pytest
 import pytest_asyncio
-from elefast import MetaDataBasedAsyncDatabaseServer, AsyncDatabaseServer, AsyncDatabase
+from elefast import AsyncDatabaseServer, AsyncDatabase
 from elefast.docker import postgres as start_and_get_postgres_container_url
 
 from elefast_example_fastapi_async.database import Base
@@ -15,7 +15,7 @@ async def postgres():
     url = getenv("TESTING_DB_URL") or start_and_get_postgres_container_url(
         driver="asyncpg"
     )
-    server = MetaDataBasedAsyncDatabaseServer(url, Base.metadata)
+    server = AsyncDatabaseServer(url, metadata=Base.metadata)
     await server.ensure_is_ready()
     return server
 

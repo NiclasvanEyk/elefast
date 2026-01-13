@@ -1,9 +1,9 @@
-from elefast_core.asyncio.abstract import AsyncDatabase, AsyncDatabaseServer
-from elefast_core.asyncio.basic import BasicAsyncDatabaseServer
-from elefast_core.asyncio.metadata import MetaDataBasedAsyncDatabaseServer
-from elefast_core.sync.abstract import Database, DatabaseServer
-from elefast_core.sync.basic import BasicDatabaseServer
-from elefast_core.sync.metadata import MetaDataBasedDatabaseServer
+from elefast_core.asyncio import (
+    AsyncDatabase,
+    AsyncDatabaseServer,
+    CanBeTurnedIntoAsyncEngine,
+)
+from elefast_core.sync import DatabaseServer, Database, CanBeTurnedIntoEngine
 
 __all__ = [
     "AsyncDatabase",
@@ -12,6 +12,6 @@ __all__ = [
     "BasicDatabaseServer",
     "Database",
     "DatabaseServer",
-    "MetaDataBasedAsyncDatabaseServer",
-    "MetaDataBasedDatabaseServer",
+    "CanBeTurnedIntoEngine",
+    "CanBeTurnedIntoAsyncEngine",
 ]
