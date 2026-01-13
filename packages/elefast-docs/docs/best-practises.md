@@ -75,12 +75,12 @@ def db(db_server: DatabaseServer, monkeypatch: pytest.MonkeyPatch):
 
 ## Supporting Existing Database Servers
 
-For some reasons it might be preferrable to not always spawn a Docker container for your tests.
+For some reasons it might be preferable to not always spawn a Docker container for your tests.
 Maybe your colleague does not like Docker and prefers running Postgres directly on their computer.
 Maybe your company policy prevents you from spawning Docker containers.
 Or maybe getting a Docker access in CI is more cumbersome than just spawning a Postgres through your CI provider (see the related section of this page).
 
-If only one of these reaons is true, you should provide a way to override the behavior in the `db_server` fixture.
+If only one of these reasons is true, you should provide a way to override the behavior in the `db_server` fixture.
 Again we can use environment variables:
 
 ```python title="tests/conftest.py"
@@ -104,7 +104,7 @@ If it is not present we still start a Docker container.
 ## Continuus Integration (CI) Environments
 
 - Examples for GitHub Actions or Gitlab CI
-- Using existig servers
+- Using existing servers
 
 ## Parallelizing Using pytest-xdist
 

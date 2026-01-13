@@ -14,10 +14,10 @@ Our guiding principles are:
 - **Speed** ⏱️
   Using an actual database in your tests can slow thekm down significantly.
   E.g. launching a Postgres container using [Testcontainers](https://github.com/testcontainers/testcontainers-python#getting-started) takes almost 30 seconds[^1].
-  With elefast, we'll ensure you'll pay as little startup costs as possible, while making it easy to avoid such waiting time alltogether by keeping the container around for future test runs.
+  With elefast, we'll ensure you'll pay as little startup costs as possible, while making it easy to avoid such waiting time all together by keeping the container around for future test runs.
 - **Less magic** 🪄
   Pytest fixtures can be quite magical.
-  Instead of providing ready-made fixtures with exotic configuration mechansims, Elefast makes you write your fixtures yourself.
+  Instead of providing ready-made fixtures with exotic configuration mechanisms, Elefast makes you write your fixtures yourself.
   A tiny bit of effort, but you have full control and visibility.
 
 The result is readable and performant test code like the following:

@@ -23,7 +23,7 @@ uv add 'elefast[docker]'
 
 Elefast does not come with an integration for e.g. pytest out of the box.
 
-However, it makes it extremley easy to create your own set of fixtures with only a few lines of code.
+However, it makes it extremely easy to create your own set of fixtures with only a few lines of code.
 Below is a starter setup to get you up and running.
 
 > TODO: Double-check with example tests
@@ -47,7 +47,7 @@ def postgres():
     # The next line provides a utility class that creates the right DB schema for
     # us when we want to use a database in a test. It will live for the remainder
     # of the Pytest session.
-    return elefast.MetaDataBasedDatabaseServer(url, Base.metadata)
+    return elefast.DatabaseServer(url, metadata=Base.metadata)
 
 
 @pytest.fixture
@@ -95,7 +95,7 @@ def test_with_session_fixture(db_session: sqlalchemy.orm.Session):
     # Act & assert based on business logic
 
   
-def test_with_elefast(db: elefast.Datbase):
+def test_with_elefast(db: elefast.Database):
     # Accessing the raw db can make sense, too. Maybe you cache some stuff in your database
     # and test concurrent access.
     connection_a = db.connection.begin()

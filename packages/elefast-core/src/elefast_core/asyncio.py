@@ -76,7 +76,7 @@ class AsyncDatabaseServer:
                 attempts += 1
                 if time.monotonic() >= deadline:
                     raise DatabaseNotReadyError(
-                        f"Reached the configured timeout of {timeout} seconds after {attempts} attempts connecting to the datbase."
+                        f"Reached the configured timeout of {timeout} seconds after {attempts} attempts connecting to the database."
                     ) from error
                 await sleep(interval)
 

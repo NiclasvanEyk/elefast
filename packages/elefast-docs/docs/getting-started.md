@@ -123,8 +123,8 @@ The latter creates an `sqlalchemy.orm.Session` that we can use to setup specific
 
 !!! info
     Feel free to adjust the names to what suits you best.
-    We'll stick to the names from this example throughout the documenation, so you have an easier time cross-referencing code.
-    But if you e.g. mostly interact wiht your database through the ORM, feel free to rename what we've named `db_session` to just `db`, and come up with another name for the fixture we named `db` (maybe the longer form `database`?).
+    We'll stick to the names from this example throughout the documentation, so you have an easier time cross-referencing code.
+    But if you e.g. mostly interact with your database through the ORM, feel free to rename what we've named `db_session` to just `db`, and come up with another name for the fixture we named `db` (maybe the longer form `database`?).
     In the end, this all comes down to personal preference, which is one of the reasons why Elefast does not come with these fixtures out of the box.
 
 ### Usage In Tests
