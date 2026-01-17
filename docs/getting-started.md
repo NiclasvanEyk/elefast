@@ -22,7 +22,7 @@ Below are some copy-pastable commands for common options.
 
 Note that they include the `docker` extra, which you can omit if you don't want to use the Docker-specific functionality.
 
-## Setup
+## Fixture Setup
 
 Once you installed the `elefast` package, you'll need to create some [Pytest fixtures](https://docs.pytest.org/en/stable/explanation/fixtures.html).
 The following sections will walk you through the recommended set and explain each of them in detail.
@@ -57,6 +57,7 @@ The first fixture is already the most important one, which sets up our database 
 
 
 ```python title="tests/conftest.py"
+import pytest
 from elefast import DatabaseServer, Database, docker
 
 from your_app.database.models import Base # (1)!
@@ -91,7 +92,9 @@ def db(db_server: DatabaseServer): # (1)!
         yield database
 ```
 
-1. The argument name here is very important. It has to match the function name of the fixture we defined before!
+1. The argument name here is very important!
+   Since we named our previous fixture function `db_server`, we now need to give our argument in our `db` fixture function name and also use `db_server`!
+   Learn more about this in the ["Requesting fixtures"](https://docs.pytest.org/en/6.2.x/fixture.html#requesting-fixtures) section of the pytest documentation.
 
 As you can see, we don't explicitly pass a fixture scope, which just means that this code will be run for each test that uses this fixture.
 Next we'll create a database in our Postgres server using a context manager and immediately `yield` it.
@@ -142,9 +145,81 @@ Now run `pytest` in your terminal, and you should see our test pass.
 Behind the scenes, our fixtures have started a Postgres container, maybe created a table structure, and connected to it.
 However, all of this does not clutter up our actual testing code.
 
-### Recap
+## Application Code
 
+We can obtain a database connections in our tests, but most likely you want to do something like this:
 
+```python title="tests/test_my_importer.py"
+from sqlalchemy.orm import Session
+
+from my_app.jobs import run_calculate_statistics_job
+from my_app.database.models import Post
+
+def test_statistics_job(db_session: Session):
+    db_session.add(Post(title="A test", views=100))
+    db_session.add(Post(title="Another test", views=100))
+    db_session.commit()
+
+    statistics = run_calculate_statistics_job()
+    assert statistics.total_views == 200
+```
+
+Previously we mostly focused on test code, but test code is worthless without the actual application code that should be tested.
+If you integrate Elefast into an existing application, you may have wondered how to get your code to also connect to the test database created by our fixtures.
+
+### Environment Variables
+
+A solid solution is to have our application code read from environment variables, as described in ["The Twelve-Factor App"](https://12factor.net/).
+
+```python
+import os
+from sqlalchemy import Engine, create_engine
+
+def get_engine() -> Engine:
+    db_url = os.getenv("DB_URL")
+    if not db_url:
+        raise ValueError("We expect a DB_URL environment variable to be present")
+    return create_engine(db_url)
+```
+
+and then adjust your `db` fixture as follows:
+
+```python
+@pytest.fixture
+def db(db_server: DatabaseServer, monkeypatch: pytest.MonkeyPatch):
+    with db_server.create_database() as database:
+        db_url = database.url.render_as_string(hide_password=False)
+        monkeypatch.setenv("DB_URL", db_url)
+        yield database
+```
+
+This will fill the `DB_URL` environment variable with a proper connection string that is different for each test.
+
+!!! warning
+
+    This will not work if you have a global `engine` variable laying around in your code.
+    You might have heard that global variables are an anti-pattern, and this highlights one example why that is the case.
+    In this case you can use the monkeypatching approach outlined in the next section.
+    Alternatively you can also store your engine in your application state (our [async FastAPI example](https://github.com/NiclasvanEyk/elefast/tree/main/packages/elefast-example-fastapi-async/src/elefast_example_fastapi_async/app.py) shows you how), or use something like the `get_engine` function in the entrypoint of your application and pass it down through function arguments.
+
+### Monkeypatching
+
+Another approach is swapping out a global `engine` variable that might exist in your code.
+This can look like this
+
+```python title="tests/conftest.py"
+# Add this import
+from sqlalchemy import create_engine
+
+@pytest.fixture
+def db(db_server: DatabaseServer, monkeypatch: pytest.MonkeyPatch):
+    with db_server.create_database() as database:
+        engine = create_engine(database.url)
+        monkeypatch.setenv("your_app.database", "engine", engine) # (1)!
+        yield database
+```
+
+1. Replace "your_app.database" with the module that contains the global `engine` variable.
 
 ## Where To Go From Here
 

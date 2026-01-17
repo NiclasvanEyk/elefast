@@ -16,62 +16,6 @@ The remaining 5% are now covered by this guide.
 
 ## Application Code
 
-Previously we mostly focused on test code, but test code is worthless without the actual application code that should be tested.
-If you integrate Elefast into an existing application, you may have wondered how to get your code to also connect to the test database created by our fixtures.
-
-### Environment Variables
-
-A solid solution is to have our application code read from environment variables, as described in ["The Twelve-Factor App"](https://12factor.net/).
-
-```python
-import os
-from sqlalchemy import Engine, create_engine
-
-def get_engine() -> Engine:
-    db_url = os.getenv("DB_URL")
-    if not db_url:
-        raise ValueError("We expect a DB_URL environment variable to be present")
-    return create_engine(db_url)
-```
-
-and then adjust your `db` fixture as follows:
-
-```python
-@pytest.fixture
-def db(db_server: DatabaseServer, monkeypatch: pytest.MonkeyPatch):
-    with db_server.create_database() as database:
-        db_url = database.url.render_as_string(hide_password=False)
-        monkeypatch.setenv("DB_URL", db_url)
-        yield database
-```
-
-This will fill the `DB_URL` environment variable with a proper connection string that is different for each test.
-
-!!! warning
-
-    This will not work if you have a global `engine` variable laying around in your code.
-    You might have heard that global variables are an anti-pattern, and this highlights one example why that is the case.
-    In this case you can use the monkeypatching approach outlined in the next section.
-    Alternatively you can also store your engine in your application state (our [async FastAPI example](https://github.com/NiclasvanEyk/elefast/tree/main/packages/elefast-example-fastapi-async/src/elefast_example_fastapi_async/app.py) shows you how), or use something like the `get_engine` function in the entrypoint of your application and pass it down through function arguments.
-
-### Monkeypatching
-
-Another approach is swapping out a global `engine` variable that might exist in your code.
-This can look like this
-
-```python title="tests/conftest.py"
-# Add this import
-from sqlalchemy import create_engine
-
-@pytest.fixture
-def db(db_server: DatabaseServer, monkeypatch: pytest.MonkeyPatch):
-    with db_server.create_database() as database:
-        engine = create_engine(database.url)
-        monkeypatch.setenv("your_app.database", "engine", engine) # (1)!
-        yield database
-```
-
-1. Replace "your_app.database" with the module that contains the global `engine` variable.
 
 ## Supporting Existing Database Servers
 
