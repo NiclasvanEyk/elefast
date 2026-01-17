@@ -51,7 +51,7 @@ class AsyncDatabase(AbstractAsyncContextManager):
 
 class AsyncDatabaseServer:
     def __init__(
-        self, engine: CanBeTurnedIntoAsyncEngine, metadata: MetaData | None
+        self, engine: CanBeTurnedIntoAsyncEngine, metadata: MetaData | None = None
     ) -> None:
         self._metadata = metadata
         self._engine = _build_engine(engine)
