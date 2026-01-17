@@ -105,7 +105,7 @@ def _figure_out_driver(driver: str | None) -> str:
 
         if find_spec(name):
             print(
-                f"Using '{name}' as the driver, since no explit --driver argument was passed, and {name} is installed.",
+                f"Using '{name}' as the driver, since no explicit --driver argument was passed, and {name} is installed.",
                 file=stderr,
             )
             return name
