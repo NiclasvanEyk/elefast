@@ -1,0 +1,18 @@
+name: Examples
+on: [push]
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+jobs:
+  fastapi_async:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+          activate-environment: true
+      - run: uv sync --all-packages --all-extras
+      - run: pytest ./examples/fastapi-async/tests
