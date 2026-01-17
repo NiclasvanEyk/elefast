@@ -2,8 +2,8 @@ from pathlib import Path
 from tempfile import gettempdir
 from filelock import FileLock
 from docker import DockerClient
-from elefast_docker import ensure_db_server_started
-from elefast_docker.configuration import Configuration
+from elefast.docker.orchestration import ensure_db_server_started
+from elefast.docker.configuration import Configuration
 from sqlalchemy import URL
 
 

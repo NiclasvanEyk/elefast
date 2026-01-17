@@ -2,7 +2,7 @@
 icon: lucide/home
 ---
 
-# Elefast
+# About
 
 Elefast is an opiniated database testing toolkit that integrates [Postgres](https://www.postgresql.org), [SQLAlchemy](https://www.sqlalchemy.org).
 It provides first-class features and documentation for using [Docker](https://www.docker.com) containers to automatically start your database with your tests and [Pytest](https://pytest.org) to run them and manage their setup logic.

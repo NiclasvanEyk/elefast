@@ -1,9 +1,9 @@
-from elefast_core.asyncio import (
+from elefast.asyncio import (
     AsyncDatabase,
     AsyncDatabaseServer,
     CanBeTurnedIntoAsyncEngine,
 )
-from elefast_core.sync import DatabaseServer, Database, CanBeTurnedIntoEngine
+from elefast.sync import DatabaseServer, Database, CanBeTurnedIntoEngine
 
 __all__ = [
     "AsyncDatabase",

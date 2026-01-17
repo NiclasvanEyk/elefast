@@ -3,7 +3,7 @@ from typing import cast
 from docker import DockerClient
 from docker.models.containers import Container
 
-from elefast_docker.configuration import Configuration
+from elefast.docker.configuration import Configuration
 
 
 def get_docker() -> DockerClient:

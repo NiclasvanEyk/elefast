@@ -14,7 +14,7 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-from elefast_core.errors import DatabaseNotReadyError
+from elefast.errors import DatabaseNotReadyError
 
 type CanBeTurnedIntoAsyncEngine = AsyncEngine | URL | str
 

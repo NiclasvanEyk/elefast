@@ -1,7 +1,7 @@
 from __future__ import annotations
 from uuid import uuid4
 import time
-from elefast_core.errors import DatabaseNotReadyError
+from elefast.errors import DatabaseNotReadyError
 
 from collections.abc import Callable
 from contextlib import AbstractContextManager

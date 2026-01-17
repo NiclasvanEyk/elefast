@@ -1,15 +1,33 @@
 [project]
-name = "elefast-workspace"
-description = "The uv workspace for the elefast family of packages"
+name = "elefast"
 version = "0.1.0"
+description = "Database testing toolkit integrating Postgres, SQLAlchemy, Pytest and Docker"
+readme = "README.md"
+authors = []
 requires-python = ">=3.14"
-dependencies = []
+dependencies = [
+    "sqlalchemy>=2.0.45",
+]
+
+[project.optional-dependencies]
+docker = [
+    "docker>=7.1.0",
+    "filelock>=3.20.3",
+]
+
+[project.scripts]
+elefast = "elefast.cli:main"
+
+[build-system]
+requires = ["uv_build>=0.9.18,<0.10.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "zensical>=0.0.15",
+]
 
 [tool.uv.workspace]
 members = [
-    "packages/elefast",
-    "packages/elefast-core",
-    "packages/elefast-docker",
-    "packages/elefast-example-fastapi-async",
-    "packages/elefast-docs",
+    "examples/fastapi-async",
 ]
