@@ -308,7 +308,7 @@ toggle.name = "Switch to system preference"
 # - https://zensical.org/docs/authoring/icons-emojis/#search
 # ----------------------------------------------------------------------------
 [project.theme.icon]
-logo = "simple/postgresql"
+logo = "lucide/zap"
 repo = "fontawesome/brands/github"
 
 # ----------------------------------------------------------------------------
