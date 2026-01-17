@@ -1,0 +1,20 @@
+[project]
+name = "elefast-example-simple-sync"
+version = "0.1.0"
+description = "An example showing how to test synchronous databases with Elefast"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "psycopg2-binary>=2.9.11",
+    "sqlalchemy>=2.0.45",
+]
+
+[dependency-groups]
+dev = [
+    "elefast[docker]",
+    "pytest>=9.0.2",
+    "pytest-xdist>=3.8.0",
+]
+
+[tool.uv.sources]
+elefast = { workspace = true }
