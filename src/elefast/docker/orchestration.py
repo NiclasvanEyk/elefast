@@ -26,9 +26,11 @@ def ensure_db_server_started(
 
 
 def get_db_server_container(docker: DockerClient, name: str) -> Container | None:
-    containers = cast(list[Container], docker.containers.list())
+    containers = cast(list[Container], docker.containers.list(all=True))
     for container in containers:
         if container.name == name:
+            if container.status == "exited":
+                container.start()
             return container
 
 
