@@ -3,7 +3,6 @@
 import sys
 import time
 from dataclasses import dataclass, replace
-from typing import Sequence
 
 import psycopg2
 from docker import DockerClient
@@ -47,13 +46,13 @@ def wait_for_postgres(
     poll_interval: float = 0.5,
 ) -> float:
     """Wait for PostgreSQL to be ready and return connection time.
-    
+
     Returns:
         The time taken to establish a successful connection
     """
     start = time.time()
     deadline = start + timeout
-    
+
     while time.time() < deadline:
         try:
             conn = psycopg2.connect(
@@ -68,7 +67,7 @@ def wait_for_postgres(
             return time.time() - start
         except psycopg2.OperationalError:
             time.sleep(poll_interval)
-    
+
     raise TimeoutError(f"PostgreSQL did not become ready after {timeout} seconds")
 
 
@@ -118,7 +117,9 @@ def benchmark_startup_config(
 
     total_time = startup_time + connection_time
 
-    print(f"{total_time:.2f}s (startup: {startup_time:.2f}s, connect: {connection_time:.2f}s)")
+    print(
+        f"{total_time:.2f}s (startup: {startup_time:.2f}s, connect: {connection_time:.2f}s)"
+    )
 
     # Clean up after benchmark
     cleanup_container(docker, container_name)
@@ -158,36 +159,42 @@ def run_benchmarks(runs: int = 1) -> list[StartupBenchmarkResult]:
 
     # Define benchmark configurations
     configs = [
-        ("No optimizations (disk storage)", Optimizations(
-            tmpfs=False,
-            fsync_off=False,
-            synchronous_commit_off=False,
-            full_page_writes_off=False,
-            wal_level_minimal=False,
-            disable_wal_senders=False,
-            disable_archiving=False,
-            autovacuum_off=False,
-            jit_off=False,
-            no_locale=False,
-            shared_buffers_mb=None,
-            checkpoint_timeout_seconds=None,
-            disable_statement_logging=False,
-        )),
-        ("tmpfs (512MB) + fsync=off + full_page_writes=off", Optimizations(
-            tmpfs=512,
-            fsync_off=True,
-            synchronous_commit_off=False,
-            full_page_writes_off=True,
-            wal_level_minimal=False,
-            disable_wal_senders=False,
-            disable_archiving=False,
-            autovacuum_off=False,
-            jit_off=False,
-            no_locale=False,
-            shared_buffers_mb=None,
-            checkpoint_timeout_seconds=None,
-            disable_statement_logging=False,
-        )),
+        (
+            "No optimizations (disk storage)",
+            Optimizations(
+                tmpfs=False,
+                fsync_off=False,
+                synchronous_commit_off=False,
+                full_page_writes_off=False,
+                wal_level_minimal=False,
+                disable_wal_senders=False,
+                disable_archiving=False,
+                autovacuum_off=False,
+                jit_off=False,
+                no_locale=False,
+                shared_buffers_mb=None,
+                checkpoint_timeout_seconds=None,
+                disable_statement_logging=False,
+            ),
+        ),
+        (
+            "tmpfs (512MB) + fsync=off + full_page_writes=off",
+            Optimizations(
+                tmpfs=512,
+                fsync_off=True,
+                synchronous_commit_off=False,
+                full_page_writes_off=True,
+                wal_level_minimal=False,
+                disable_wal_senders=False,
+                disable_archiving=False,
+                autovacuum_off=False,
+                jit_off=False,
+                no_locale=False,
+                shared_buffers_mb=None,
+                checkpoint_timeout_seconds=None,
+                disable_statement_logging=False,
+            ),
+        ),
         ("All optimizations (auto-sized tmpfs)", Optimizations()),
     ]
 
@@ -244,7 +251,9 @@ def print_summary(results: list[StartupBenchmarkResult]) -> None:
         connection_times = [r.connection_time for r in config_results]
         avg_connection = sum(connection_times) / len(connection_times)
 
-        print(f"  Total time:      {avg_total:.2f}s (avg), {min_total:.2f}s (min), {max_total:.2f}s (max)")
+        print(
+            f"  Total time:      {avg_total:.2f}s (avg), {min_total:.2f}s (min), {max_total:.2f}s (max)"
+        )
         print(f"  Startup time:    {avg_startup:.2f}s (avg)")
         print(f"  Connection time: {avg_connection:.2f}s (avg)")
         print()
@@ -254,7 +263,9 @@ def main() -> None:
     """Main entry point for db startup benchmarks."""
     import argparse
 
-    parser = argparse.ArgumentParser(description="Benchmark PostgreSQL container startup")
+    parser = argparse.ArgumentParser(
+        description="Benchmark PostgreSQL container startup"
+    )
     parser.add_argument(
         "--runs",
         type=int,

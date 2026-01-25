@@ -53,7 +53,7 @@ def ensure_db_server_started(
     keep_container_around: bool = False,
 ) -> tuple[Container, int]:
     """Start or retrieve the database server container.
-    
+
     Returns:
         Tuple of (container, host_port) where host_port is the actual exposed port on the host
     """
@@ -71,10 +71,10 @@ def ensure_db_server_started(
 
 def _get_host_port_from_container(container: Container) -> int:
     """Extract the actual host port from a running container.
-    
+
     Args:
         container: Docker container object
-        
+
     Returns:
         The host port that 5432 is mapped to (or the configured container port)
     """
@@ -85,7 +85,7 @@ def _get_host_port_from_container(container: Container) -> int:
             host_port = bindings[0].get("HostPort")
             if host_port:
                 return int(host_port)
-    
+
     raise RuntimeError(f"Could not determine host port from container {container.name}")
 
 
@@ -131,7 +131,10 @@ def start_db_server_container(
     if optimizations.jit_off:
         command += ["-c", "jit=off"]
     if optimizations.checkpoint_timeout_seconds is not None:
-        command += ["-c", f"checkpoint_timeout={optimizations.checkpoint_timeout_seconds}s"]
+        command += [
+            "-c",
+            f"checkpoint_timeout={optimizations.checkpoint_timeout_seconds}s",
+        ]
     if optimizations.disable_statement_logging:
         command += ["-c", "log_min_duration_statement=-1"]
     if optimizations.shared_buffers_mb is not None:

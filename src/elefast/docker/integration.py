@@ -20,7 +20,7 @@ def postgres(
         _, host_port = ensure_db_server_started(
             docker=docker, config=config, keep_container_around=keep_container_around
         )
-    
+
     return URL.create(
         drivername=f"postgresql+{driver}",
         username=config.credentials.user,

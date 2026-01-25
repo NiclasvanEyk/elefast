@@ -41,7 +41,8 @@ spec_config.loader.exec_module(configuration_module)
 # Get default Optimizations instance to extract defaults
 DEFAULT_OPTIMIZATIONS = configuration_module.Optimizations()
 OPTIMIZATION_DEFAULTS = {
-    f.name: getattr(DEFAULT_OPTIMIZATIONS, f.name) for f in fields(DEFAULT_OPTIMIZATIONS)
+    f.name: getattr(DEFAULT_OPTIMIZATIONS, f.name)
+    for f in fields(DEFAULT_OPTIMIZATIONS)
 }
 
 
