@@ -8,35 +8,12 @@
 
 [project]
 
-# The site_name is shown in the page header and the browser window title
-#
-# Read more: https://zensical.org/docs/setup/basics/#site_name
 site_name = "Elefast"
-
-# The site_description is included in the HTML head and should contain a
-# meaningful description of the site content for use by search engines.
-#
-# Read more: https://zensical.org/docs/setup/basics/#site_description
-site_description = "A new project generated from the default template project."
-
-# The site_author attribute. This is used in the HTML head element.
-#
-# Read more: https://zensical.org/docs/setup/basics/#site_author
+site_description = "Database testing toolkit integrating Postgres, SQLAlchemy, Pytest and Docker"
 site_author = "Niclas van Eyk"
-
-# The site_url is the canonical URL for your site. When building online
-# documentation you should set this.
-# Read more: https://zensical.org/docs/setup/basics/#site_url
-#site_url = "https://www.example.com/"
 
 repo_url = "https://github.com/NiclasvanEyk/elefast"
 repo_name = "NiclasvanEyk/elefast"
-
-# The copyright notice appears in the page footer and can contain an HTML
-# fragment.
-#
-# Read more: https://zensical.org/docs/setup/basics/#copyright
-copyright = ""
 
 # Zensical supports both implicit navigation and explicitly defined navigation.
 # If you decide not to define a navigation here then Zensical will simply
@@ -51,25 +28,8 @@ nav = [
    "best-practises.md",
    "recipes.md",
    "docker.md",
+   "optimizations.md",
 ]
-
-# With the "extra_css" option you can add your own CSS styling to customize
-# your Zensical project according to your needs. You can add any number of
-# CSS files.
-#
-# The path provided should be relative to the "docs_dir".
-#
-# Read more: https://zensical.org/docs/customization/#additional-css
-#
-#extra_css = ["stylesheets/extra.css"]
-
-# With the `extra_javascript` option you can add your own JavaScript to your
-# project to customize the behavior according to your needs.
-#
-# The path provided should be relative to the "docs_dir".
-#
-# Read more: https://zensical.org/docs/customization/#additional-javascript
-#extra_javascript = ["javascripts/extra.js"]
 
 # ----------------------------------------------------------------------------
 # Section for configuring theme options
@@ -160,7 +120,6 @@ features = [
     # https://zensical.org/docs/authoring/content-tabs/#linked-content-tabs
     "content.tabs.link",
 
-    # TODO: not sure I understand this one? Is there a demo of this in the docs?
     # https://zensical.org/docs/authoring/tooltips/#improved-tooltips
     "content.tooltips",
 
@@ -228,7 +187,7 @@ features = [
     # A back-to-top button can be shown when the user, after scrolling down,
     # starts to scroll up again.
     # https://zensical.org/docs/setup/navigation/#back-to-top-button
-    "navigation.top",
+    #"navigation.top",
 
     # When anchor tracking is enabled, the URL in the address bar is
     # automatically updated with the active anchor as highlighted in the table
@@ -244,12 +203,12 @@ features = [
     # When anchor following for the table of contents is enabled, the sidebar
     # is automatically scrolled so that the active anchor is always visible.
     # https://zensical.org/docs/setup/navigation/#anchor-following
-    # "toc.follow",
+    "toc.follow",
 
     # When navigation integration for the table of contents is enabled, it is
     # always rendered as part of the navigation sidebar on the left.
     # https://zensical.org/docs/setup/navigation/#navigation-integration
-    "toc.integrate",
+    #"toc.integrate",
 ]
 
 # ----------------------------------------------------------------------------

@@ -1,3 +1,4 @@
+import socket
 from typing import cast
 
 from docker import DockerClient
@@ -10,19 +11,82 @@ def get_docker() -> DockerClient:
     return DockerClient.from_env()
 
 
+def find_free_port() -> int:
+    """Find a random free port on the host system."""
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind(("", 0))
+        s.listen(1)
+        port = s.getsockname()[1]
+    return port
+
+
+def _resolve_database_port(
+    database_port: tuple[int, int | None] | None,
+) -> tuple[int, int]:
+    if database_port is None:
+        return 5432, find_free_port()
+    if isinstance(database_port, tuple):
+        if len(database_port) != 2:
+            raise ValueError(
+                f"database_port tuple must have exactly 2 elements, got {len(database_port)}"
+            )
+        container_port, host_port_or_none = database_port
+        if not isinstance(container_port, int):
+            raise TypeError(
+                f"database_port tuple first element must be int, got {type(container_port).__name__}"
+            )
+        if host_port_or_none is None:
+            return container_port, find_free_port()
+        if isinstance(host_port_or_none, int):
+            return container_port, host_port_or_none
+        raise TypeError(
+            f"database_port tuple second element must be int or None, got {type(host_port_or_none).__name__}"
+        )
+    raise TypeError(
+        f"database_port must be tuple[int, int | None] or None, got {type(database_port).__name__}"
+    )
+
+
 def ensure_db_server_started(
     docker: DockerClient | None = None,
     config: Configuration | None = None,
     keep_container_around: bool = False,
-) -> Container:
+) -> tuple[Container, int]:
+    """Start or retrieve the database server container.
+    
+    Returns:
+        Tuple of (container, host_port) where host_port is the actual exposed port on the host
+    """
     if docker is None:
         docker = get_docker()
     if config is None:
         config = Configuration()
 
     if container := get_db_server_container(docker, config.container.name):
-        return container
+        # Extract the host port from existing container
+        host_port = _get_host_port_from_container(container)
+        return container, host_port
     return start_db_server_container(docker, config, keep_container_around)
+
+
+def _get_host_port_from_container(container: Container) -> int:
+    """Extract the actual host port from a running container.
+    
+    Args:
+        container: Docker container object
+        
+    Returns:
+        The host port that 5432 is mapped to (or the configured container port)
+    """
+    # container.ports format: {"5432/tcp": [{"HostPort": "12345"}]} or similar
+    # We look for port bindings and extract the host port
+    for port_spec, bindings in container.ports.items():
+        if bindings and isinstance(bindings, list) and len(bindings) > 0:
+            host_port = bindings[0].get("HostPort")
+            if host_port:
+                return int(host_port)
+    
+    raise RuntimeError(f"Could not determine host port from container {container.name}")
 
 
 def get_db_server_container(docker: DockerClient, name: str) -> Container | None:
@@ -36,7 +100,7 @@ def get_db_server_container(docker: DockerClient, name: str) -> Container | None
 
 def start_db_server_container(
     docker: DockerClient, config: Configuration, keep_container_around: bool
-) -> Container:
+) -> tuple[Container, int]:
     optimizations = config.optimizations
     command: list[str] = []
     env: dict[str, str] = {
@@ -58,8 +122,18 @@ def start_db_server_container(
         command += ["-c", "archive_mode=off"]
     if optimizations.autovacuum_off:
         command += ["-c", "autovacuum=off"]
+    else:
+        # Enable autovacuum with aggressive settings to prevent table bloat
+        command += ["-c", "autovacuum=on"]
+        command += ["-c", "autovacuum_naptime=10s"]
+        command += ["-c", "autovacuum_vacuum_scale_factor=0.01"]
+        command += ["-c", "autovacuum_analyze_scale_factor=0.005"]
     if optimizations.jit_off:
         command += ["-c", "jit=off"]
+    if optimizations.checkpoint_timeout_seconds is not None:
+        command += ["-c", f"checkpoint_timeout={optimizations.checkpoint_timeout_seconds}s"]
+    if optimizations.disable_statement_logging:
+        command += ["-c", "log_min_duration_statement=-1"]
     if optimizations.shared_buffers_mb is not None:
         command += ["-c", f"shared_buffers={optimizations.shared_buffers_mb}MB"]
     if optimizations.work_mem_mb is not None:
@@ -72,14 +146,22 @@ def start_db_server_container(
     if optimizations.no_locale:
         env["POSTGRES_INITDB_ARGS"] = "--no-locale"
 
-    return docker.containers.run(
+    # Resolve database port configuration
+    container_port, host_port = _resolve_database_port(config.container.database_port)
+
+    # Set environment variable with the actual host port for database connection
+    env["ELEFAST_POSTGRES_HOST_PORT"] = str(host_port)
+
+    container = docker.containers.run(
         image=f"{config.container.image}:{config.container.version}",
         name=config.container.name,
-        ports=config.container.ports,
+        ports={str(container_port): host_port},
         environment=env,
+        command=command,
         tmpfs={"/var/lib/postgresql": f"rw,size={optimizations.tmpfs_size_mb}m"}
         if optimizations.tmpfs_size_mb is not None
         else {},
         remove=not keep_container_around,
         detach=True,
     )
+    return container, host_port

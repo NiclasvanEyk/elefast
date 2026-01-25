@@ -17,13 +17,14 @@ def postgres(
     config = config if config else Configuration()
 
     with FileLock(Path(gettempdir()) / "elefast-docker.lock"):
-        ensure_db_server_started(
+        _, host_port = ensure_db_server_started(
             docker=docker, config=config, keep_container_around=keep_container_around
         )
+    
     return URL.create(
         drivername=f"postgresql+{driver}",
         username=config.credentials.user,
         password=config.credentials.password,
         host=config.credentials.host,
-        port=config.credentials.port,
+        port=host_port,
     )
