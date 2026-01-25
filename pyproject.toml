@@ -44,4 +44,5 @@ dev = [
 members = [
     "examples/fastapi-async",
     "examples/simple-sync",
+    "benchmarks",
 ]

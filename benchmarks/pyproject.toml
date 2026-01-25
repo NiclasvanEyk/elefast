@@ -1,0 +1,21 @@
+[project]
+name = "benchmarks"
+version = "0.1.0"
+description = "Benchmarking tools for elefast"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "elefast[docker]",
+    "psycopg2-binary>=2.9.0",
+]
+
+[project.scripts]
+bench-db-startup = "benchmarks.db_startup:main"
+bench-io = "benchmarks.io_operations:main"
+
+[build-system]
+requires = ["uv_build>=0.9.18,<0.10.0"]
+build-backend = "uv_build"
+
+[tool.uv.sources]
+elefast = { workspace = true }
