@@ -152,15 +152,29 @@ def start_db_server_container(
     # Set environment variable with the actual host port for database connection
     env["ELEFAST_POSTGRES_HOST_PORT"] = str(host_port)
 
+    # Configure tmpfs mount
+    tmpfs_config = {}
+    if isinstance(optimizations.tmpfs, bool):
+        if optimizations.tmpfs:
+            # Auto-size: Docker will use 50% of host RAM by default
+            tmpfs_config["/var/lib/postgresql"] = "rw"
+        # else: False means no tmpfs, tmpfs_config stays empty
+    else:
+        # Must be an integer
+        if optimizations.tmpfs <= 0:
+            raise ValueError(
+                f"tmpfs size must be a positive integer or a boolean, got {optimizations.tmpfs}"
+            )
+        # Fixed size in MB
+        tmpfs_config["/var/lib/postgresql"] = f"rw,size={optimizations.tmpfs}m"
+
     container = docker.containers.run(
         image=f"{config.container.image}:{config.container.version}",
         name=config.container.name,
         ports={str(container_port): host_port},
         environment=env,
         command=command,
-        tmpfs={"/var/lib/postgresql": f"rw,size={optimizations.tmpfs_size_mb}m"}
-        if optimizations.tmpfs_size_mb is not None
-        else {},
+        tmpfs=tmpfs_config,
         remove=not keep_container_around,
         detach=True,
     )

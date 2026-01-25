@@ -50,7 +50,7 @@ that don't need to survive container restarts.
 | `no_locale` | `True` | 🟢 | 5-10% faster initialization, smaller memory footprint. |
 | `shared_buffers_mb` | `128` | 🟡 | ~10-20% improvement for working sets smaller than this value. |
 | `synchronous_commit_off` | `True` | 🟡 | 15-25% improvement for transactional workloads. |
-| `tmpfs_size_mb` | `512` | 🟡 | 10-100x improvement for I/O heavy tests. |
+| `tmpfs` | `True` | 🟢 | 10-100x improvement for I/O heavy tests. |
 | `wal_level_minimal` | `True` | 🟢 | 5-8% reduction in WAL generation. |
 | `work_mem_mb` | `None` | 🟢 | Using None (default) is fine for tests. |
 
@@ -202,17 +202,17 @@ If your test data is larger than 128MB, increase this value or set to None to us
 
 Transaction durability is not guaranteed. Acceptable for most test scenarios.
 
-### 🟡 `tmpfs_size_mb`
+### 🟢 `tmpfs`
 
-**Risk Factor:** 0.3
+**Risk Factor:** 0.2
 
 **Gain**
 
-10-100x improvement for I/O heavy tests. Matters because test databases typically have small datasets and I/O is a major bottleneck.
+10-100x improvement for I/O heavy tests. Matters because test databases typically have small datasets and I/O is a major bottleneck. Default (True) auto-sizes to 50% of host RAM.
 
 **Potential Issues**
 
-Limited to 512MB by default. If your tests need more data, increase this or set to None to use disk.
+If your tests have large datasets that exceed available RAM, disable tmpfs by setting to False. Or set to a positive integer for a fixed size in MB.
 
 ### 🟢 `wal_level_minimal`
 

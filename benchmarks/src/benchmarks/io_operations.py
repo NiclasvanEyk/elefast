@@ -290,7 +290,7 @@ def benchmark_scenario(
 
     # Gather optimization settings
     opt_dict = {
-        "tmpfs_size_mb": optimizations.tmpfs_size_mb,
+        "tmpfs": optimizations.tmpfs,
         "fsync_off": optimizations.fsync_off,
         "synchronous_commit_off": optimizations.synchronous_commit_off,
         "full_page_writes_off": optimizations.full_page_writes_off,
@@ -325,9 +325,9 @@ def run_benchmarks(runs: int = 1) -> list[IOBenchmarkResult]:
     # Define optimization configurations
     configs = [
         (
-            "No optimizations",
+            "No optimizations (disk storage)",
             Optimizations(
-                tmpfs_size_mb=None,
+                tmpfs=False,
                 fsync_off=False,
                 synchronous_commit_off=False,
                 full_page_writes_off=False,
@@ -343,9 +343,9 @@ def run_benchmarks(runs: int = 1) -> list[IOBenchmarkResult]:
             ),
         ),
         (
-            "tmpfs + fsync=off + full_page_writes=off",
+            "tmpfs (512MB) + fsync=off + full_page_writes=off",
             Optimizations(
-                tmpfs_size_mb=512,
+                tmpfs=512,
                 fsync_off=True,
                 synchronous_commit_off=False,
                 full_page_writes_off=True,
@@ -360,7 +360,7 @@ def run_benchmarks(runs: int = 1) -> list[IOBenchmarkResult]:
                 disable_statement_logging=False,
             ),
         ),
-        ("All optimizations", Optimizations()),
+        ("All optimizations (auto-sized tmpfs)", Optimizations()),
     ]
 
     # Define scenarios
@@ -434,9 +434,9 @@ def print_summary(results: list[IOBenchmarkResult]) -> None:
 
         print(f"{scenario}:")
         for config_name in [
-            "No optimizations",
-            "tmpfs + fsync=off + full_page_writes=off",
-            "All optimizations",
+            "No optimizations (disk storage)",
+            "tmpfs (512MB) + fsync=off + full_page_writes=off",
+            "All optimizations (auto-sized tmpfs)",
         ]:
             if config_name not in by_scenario[scenario]:
                 continue

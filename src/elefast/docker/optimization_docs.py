@@ -22,10 +22,10 @@ class OptimizationInfo:
 
 
 OPTIMIZATION_DOCS = {
-    "tmpfs_size_mb": OptimizationInfo(
-        gain="10-100x improvement for I/O heavy tests. Matters because test databases typically have small datasets and I/O is a major bottleneck.",
-        risk="Limited to 512MB by default. If your tests need more data, increase this or set to None to use disk.",
-        risk_factor=0.3,
+    "tmpfs": OptimizationInfo(
+        gain="10-100x improvement for I/O heavy tests. Matters because test databases typically have small datasets and I/O is a major bottleneck. Default (True) auto-sizes to 50% of host RAM.",
+        risk="If your tests have large datasets that exceed available RAM, disable tmpfs by setting to False. Or set to a positive integer for a fixed size in MB.",
+        risk_factor=0.2,
     ),
     "fsync_off": OptimizationInfo(
         gain="10-30% write throughput improvement. Matters because tests run many sequential writes during setup and teardown.",

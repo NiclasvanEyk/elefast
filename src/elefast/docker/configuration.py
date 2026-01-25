@@ -14,7 +14,14 @@ class Optimizations:
     each setting, including performance gains, risks, and when to disable them.
     """
 
-    tmpfs_size_mb: int | None = 512
+    tmpfs: int | bool = True
+    """Configuration for tmpfs mount at /var/lib/postgresql.
+    
+    - `True` (default): Auto-size tmpfs (Docker defaults to 50% of host RAM)
+    - `False`: Disable tmpfs, use disk storage instead
+    - Positive integer: Use fixed size in MB
+    - `0` or negative values: Invalid, raises an error
+    """
     fsync_off: bool = True
     synchronous_commit_off: bool = True
     full_page_writes_off: bool = True
