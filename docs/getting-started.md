@@ -27,7 +27,7 @@ Note that they include the `docker` extra, which you can omit if you don't want 
 Once you installed the `elefast` package, you'll need to create some [Pytest fixtures](https://docs.pytest.org/en/stable/explanation/fixtures.html).
 The following sections will walk you through the recommended set and explain each of them in detail.
 
-??? tip "The Elefast CLI"
+!!! tip "The Elefast CLI"
 
     To quickly get up and running in a new project, you can use the `init` command.
     It ask you some questions about your setup (e.g. which driver you'll use, if you use async or not, etc.) and print boilerplate code to the console.
@@ -60,7 +60,7 @@ The first fixture is already the most important one, which sets up our database 
 import pytest
 from elefast import DatabaseServer, Database, docker
 
-from your_app.database.models import Base # (1)!
+from my_app.database.models import Base # (1)!
 
 @pytest.fixture(scope="session")
 def db_server() -> DatabaseServer:
@@ -84,8 +84,6 @@ If you don't use the SQLAlchemy ORM don't worry, this parameter is completely op
 Now that we have a fixture that provides us with a database server, we can add another one that creates a database when we need one for a test.
 
 ```python title="tests/conftest.py"
-# ...
-
 @pytest.fixture
 def db(db_server: DatabaseServer): # (1)!
     with db_server.create_database() as database:
@@ -108,8 +106,6 @@ However, this would lead to lots of `with` blocks and indentation, which can be 
 So while we are here creating fixtures, let's make our lives a little bit easier and create two more that will help us connect to our database.
 
 ```python title="tests/conftest.py"
-# ...
-
 @pytest.fixture
 def db_connection(db: Database):
     with db.engine.begin() as connection:
@@ -135,10 +131,7 @@ The latter creates an `sqlalchemy.orm.Session` that we can use to setup specific
 To then 
 
 ```python title="tests/test_database_math.py"
-from sqlalchemy import Connection
-
-def test_quick_maths(db_connection: Connection):
-    pass
+--8<-- "../examples/simple-sync/tests/test_database_math.py"
 ```
 
 Now run `pytest` in your terminal, and you should see our test pass.
@@ -147,25 +140,54 @@ However, all of this does not clutter up our actual testing code.
 
 ## Application Code
 
-We can obtain a database connections in our tests, but most likely you want to do something like this:
+Now that we have convenient access to a database in our tests, we probably need to connect our application code.
+Depending on how your application is architected, there are different ways of having your application code use the testing database.
 
-```python title="tests/test_my_importer.py"
-from sqlalchemy.orm import Session
+### Explicit Passing
 
-from my_app.jobs import run_calculate_statistics_job
-from my_app.database.models import Post
+The easiest way is just passing parameters.
+Imagine we are using the ORM and have a function `calculate_statistics`.
 
-def test_statistics_job(db_session: Session):
-    db_session.add(Post(title="A test", views=100))
-    db_session.add(Post(title="Another test", views=100))
-    db_session.commit()
+=== "tests/test_my_importer.py"
+    ```python title="" hl_lines="12"
+    from sqlalchemy.orm import Session
+    from my_app.database.models import Post
+    from my_app.statistics import calculate_statistics
 
-    statistics = run_calculate_statistics_job()
-    assert statistics.total_views == 200
-```
+    def test_statistics_job(db_session: Session):
+        # Arrange
+        db_session.add(Post(title="A test", views=100))
+        db_session.add(Post(title="Another test", views=100))
+        db_session.commit()
 
-Previously we mostly focused on test code, but test code is worthless without the actual application code that should be tested.
-If you integrate Elefast into an existing application, you may have wondered how to get your code to also connect to the test database created by our fixtures.
+        # Act
+        statistics = run_calculate_statistics_job(db_session)
+
+        # Assert
+        assert statistics.total_views == 200
+    ```
+=== "my_app/statistics.py"
+    ```python
+    from dataclasses import dataclass
+    from sqlalchemy import select, func
+    from sqlalchemy.orm import Session
+    from my_app.database.models import Post
+
+    @dataclass
+    class Statistics:
+        total_views: int
+   
+    def calculate_statistics(db: Session): # (1)!
+        return Statistics(
+            total_views=db.scalar(select(func.count(Post.views)))
+        )
+    ```
+
+    1. By accepting the `Session` to use as a parameter, we are able to have the test session passed during our test, and an actual one in whatever code uses this function.
+
+As you can see, using our connection to the testing database is trivial.
+We just pass the connection to the method and everything works as expected.
+
 
 ### Environment Variables
 
@@ -215,11 +237,11 @@ from sqlalchemy import create_engine
 def db(db_server: DatabaseServer, monkeypatch: pytest.MonkeyPatch):
     with db_server.create_database() as database:
         engine = create_engine(database.url)
-        monkeypatch.setenv("your_app.database", "engine", engine) # (1)!
+        monkeypatch.setenv("my_app.database", "engine", engine) # (1)!
         yield database
 ```
 
-1. Replace "your_app.database" with the module that contains the global `engine` variable.
+1. Replace "my_app.database" with the module that contains the global `engine` variable.
 
 ## Where To Go From Here
 
