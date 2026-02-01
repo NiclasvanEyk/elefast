@@ -1,6 +1,3 @@
-> [!WARNING]  
-> Alpha-level software.
-
 # Elefast 🐘⚡
 
 Using an actual database for testing is nice, but setting everything up can be a pain.

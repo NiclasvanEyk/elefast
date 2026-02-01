@@ -7,27 +7,68 @@ icon: lucide/chef-hat
 Since Elefast is very flexible, there is no one-size-fits-all solution.
 This page describes several copy-paste friendly examples to get you up and running regardless of your setup.
 
-## How to keep a database around after the test ends?
+## Persistent Databases
 
-- Can be useful for debugging
+The `elefast init` command generates code that roughly looks like the following
 
-## Optimizations
+```python
+# Setup code for the database server...
 
-### Not Dropping Test DBs
+@pytest.fixture
+def db(db_server: DatabaseServer):
+    with db_server.create_database() as database:
+        yield database
 
-- If we don't use a context manager to clean up our DBs, we can save a few milliseconds.
-  Since we run in a dockerized environment anyways, the whole server will vanish after our test session, so we could be lazy here.
-  Maybe one needs to tweak the size of the memoryfs though, or use the actual disk instead.
+# Utilities for connection to the database...
+```
 
-## FastApi Example Project
+As you can see, we use the context manager API provided by the `elefast.Database` instance that is returned from `db_server.create_database()`,
+This ensures that our databases that get created for each test are properly cleaned up after each test runs, even if it throws an exception.
 
-## Supporting More Setups
+However, this behavior might not be what you want.
+In this case, just return the new database object.
 
-### Async
+```python
+@pytest.fixture
+def db(db_server: DatabaseServer):
+    return db_server.create_database()
+```
 
-### Monorepos
+For one, this makes the test run a tiny bit faster.
+Deleting data takes some time, and if we e.g. run in a CI environment, the container and all its data will be deleted anyways.
+Just be aware that this may fill up your RAM or disk if your test suite is large.
 
-- Repo-local plugins for sharing fixtures
+Another good reason is debugging.
+Maybe you want to inspect the database state that your failing test generated.
+In that case, it can be helpful to prefix the databases with the test name that it belongs to.
 
-### Multiple Servers Or Databases
+```python
+@pytest.fixture
+def db(db_server: DatabaseServer, request: pytest.FixtureRequest):
+    return db_server.create_database(prefix=request.node.name)
+```
+
+Now you can connect to the testing database with your datbabase explorer or `psql` and look for a database that starts with the name of your test case.
+Note that the name will be suffixed by a UUID to ensure uniqueness.
+
+## Async
+
+Async/await can enable nice performance gains, especially when paired with a ASGI framework like FastAPI.
+Elefast supports `async` out of the box.
+Just prefix all classes with `Async*` and you should be fine.
+
+If you want to see examples, run the following command in your activated virtual environment
+
+```shell
+elefast init --async --driver=asyncpg
+```
+
+Alternatively we have [an example project](https://github.com/NiclasvanEyk/elefast/tree/main/examples/fastapi-async) demonstrating the use of the async API.
+It also uses `pytest_asyncio` in [its fixtures](https://github.com/NiclasvanEyk/elefast//examples/fastapi-async).
+
+## Monorepos
+
+[The `elefast-example-uv-monorepo` example](https://github.com/NiclasvanEyk/elefast-example-uv-monorepo) shows you how you can create a repo-local Pytest plugin in your `uv` workspace.
+
+<!-- ### Multiple Servers Or Databases -->
 

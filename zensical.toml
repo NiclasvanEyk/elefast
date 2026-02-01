@@ -28,7 +28,7 @@ nav = [
    "best-practises.md",
    "recipes.md",
    "docker.md",
-   "optimizations.md",
+   "ci.md",
 ]
 
 # ----------------------------------------------------------------------------

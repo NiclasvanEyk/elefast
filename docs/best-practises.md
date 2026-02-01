@@ -14,9 +14,6 @@ The remaining 5% are now covered by this guide.
     If you've created your `tests/conftest.py` with `elefast init` you should already see some of these examples in your code.
     It still does not hurt to read up on why they might be useful, but you don't need to adjust your fixtures in some of the cases.
 
-## Application Code
-
-
 ## Supporting Existing Database Servers
 
 For some reasons it might be preferable to not always spawn a Docker container for your tests.
@@ -36,7 +33,9 @@ def db_server() -> DatabaseServer:
     db_url = os.getenv("TESTING_DB_URL")
     if not db_url:
         db_url = docker.postgres()
-    return DatabaseServer(db_url)
+    server = DatabaseServer(db_url)
+    server.ensure_is_ready()
+    return server
 ```
 
 Now we try to read a database connection string from the `TESTING_DB_URL` environment variable.
@@ -44,11 +43,6 @@ If it is not present we still start a Docker container.
 
 !!! tip
     Use `.env` files and [`pytest-dotenv`](https://pypi.org/project/pytest-dotenv) to have an easier time setting `TESTING_DB_URL` when running `pytest`.
-
-## Continuus Integration (CI) Environments
-
-- Examples for GitHub Actions or Gitlab CI
-- Using existing servers
 
 ## Parallelizing Using pytest-xdist
 
@@ -64,5 +58,4 @@ But once you approach 100+ test cases that need a database, running them in para
 <!-- ## Seed Data -->
 
 <!-- ## Migrations / Alembic -->
-
 
