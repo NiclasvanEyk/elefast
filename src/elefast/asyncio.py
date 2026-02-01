@@ -80,10 +80,16 @@ class AsyncDatabaseServer:
                     ) from error
                 await sleep(interval)
 
-    async def create_database(self) -> AsyncDatabase:
+    async def create_database(
+        self,
+        prefix: str = "elefast",
+        encoding: str = "utf8",
+    ) -> AsyncDatabase:
         template_db = self._template_db_name
         if template_db is None:
-            engine = await _prepare_async_database(self._engine)
+            engine = await _prepare_async_database(
+                self._engine, encoding=encoding, prefix="elefast-template-db"
+            )
             if self._metadata:
                 async with engine.begin() as connection:
                     await connection.run_sync(self._metadata.drop_all)
@@ -93,7 +99,9 @@ class AsyncDatabaseServer:
             assert isinstance(template_db, str)
             self._template_db_name = template_db
 
-        engine = await _prepare_async_database(self._engine, template=template_db)
+        engine = await _prepare_async_database(
+            self._engine, encoding=encoding, prefix=prefix, template=template_db
+        )
         return AsyncDatabase(engine=engine, server=self)
 
     async def drop_database(self, name: str) -> None:
@@ -103,9 +111,12 @@ class AsyncDatabaseServer:
 
 
 async def _prepare_async_database(
-    engine: AsyncEngine, encoding: str = "utf8", template: str | None = None
+    engine: AsyncEngine,
+    prefix: str = "elefast",
+    encoding: str = "utf8",
+    template: str | None = None,
 ) -> AsyncEngine:
-    database = f"pytest-elephantastic-{uuid4()}"
+    database = f"{prefix}-{uuid4()}"
     async with engine.begin() as connection:
         statement = (
             f"CREATE DATABASE \"{database}\" ENCODING '{encoding}' TEMPLATE template0"

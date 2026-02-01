@@ -74,10 +74,16 @@ class DatabaseServer:
                     ) from error
                 time.sleep(interval)
 
-    def create_database(self) -> Database:
+    def create_database(
+        self,
+        prefix: str = "elefast",
+        encoding: str = "utf8",
+    ) -> Database:
         template_db = self._template_db_name
         if template_db is None:
-            engine = _prepare_database(self._engine)
+            engine = _prepare_database(
+                self._engine, encoding=encoding, prefix="elefast-template-db"
+            )
             if self._metadata:
                 with engine.begin() as connection:
                     self._metadata.drop_all(bind=connection)
@@ -87,7 +93,9 @@ class DatabaseServer:
             assert isinstance(template_db, str)
             self._template_db_name = template_db
 
-        engine = _prepare_database(self._engine, template=template_db)
+        engine = _prepare_database(
+            self._engine, encoding=encoding, prefix=prefix, template=template_db
+        )
         return Database(engine=engine, server=self)
 
     def drop_database(self, name: str) -> None:
@@ -105,9 +113,12 @@ def _build_engine(input: CanBeTurnedIntoEngine) -> Engine:
 
 
 def _prepare_database(
-    engine: Engine, encoding: str = "utf8", template: str | None = None
+    engine: Engine,
+    prefix: str = "elefast",
+    encoding: str = "utf8",
+    template: str | None = None,
 ) -> Engine:
-    database = f"pytest-elephantastic-{uuid4()}"
+    database = f"{prefix}-{uuid4()}"
     with engine.begin() as connection:
         statement = (
             f"CREATE DATABASE \"{database}\" ENCODING '{encoding}' TEMPLATE template0"
