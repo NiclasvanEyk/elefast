@@ -70,21 +70,20 @@ def ensure_db_server_started(
 
 
 def _get_host_port_from_container(container: Container) -> int:
-    """Extract the actual host port from a running container.
+    env_vars = (container.attrs or {}).get("Config", {}).get("Env", [])
+    for env_var_str in env_vars:
+        if (
+            not isinstance(env_var_str, str)
+            or not env_var_str
+            or "=" not in env_var_str
+        ):
+            continue
 
-    Args:
-        container: Docker container object
+        name, value = cast(tuple[str, str], env_var_str.split("=", 1))
+        if name != "ELEFAST_POSTGRES_HOST_PORT" or not value.isdigit():
+            continue
 
-    Returns:
-        The host port that 5432 is mapped to (or the configured container port)
-    """
-    # container.ports format: {"5432/tcp": [{"HostPort": "12345"}]} or similar
-    # We look for port bindings and extract the host port
-    for port_spec, bindings in container.ports.items():
-        if bindings and isinstance(bindings, list) and len(bindings) > 0:
-            host_port = bindings[0].get("HostPort")
-            if host_port:
-                return int(host_port)
+        return int(value)
 
     raise RuntimeError(f"Could not determine host port from container {container.name}")
 
@@ -106,6 +105,7 @@ def start_db_server_container(
     env: dict[str, str] = {
         "POSTGRES_USER": config.credentials.user,
         "POSTGRES_PASSWORD": config.credentials.password,
+        "POSTGRES_INITDB_ARGS": "--encoding=UTF8 --locale=en_US.UTF-8",
     }
 
     if optimizations.fsync_off:
@@ -146,8 +146,6 @@ def start_db_server_container(
             "-c",
             f"maintenance_work_mem={optimizations.maintenance_work_mem_mb}MB",
         ]
-    if optimizations.no_locale:
-        env["POSTGRES_INITDB_ARGS"] = "--no-locale"
 
     # Resolve database port configuration
     container_port, host_port = _resolve_database_port(config.container.database_port)

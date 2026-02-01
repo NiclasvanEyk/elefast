@@ -30,7 +30,6 @@ class Optimizations:
     disable_archiving: bool = True
     autovacuum_off: bool = False
     jit_off: bool = True
-    no_locale: bool = True
     shared_buffers_mb: int | None = 128
     work_mem_mb: int | None = None
     maintenance_work_mem_mb: int | None = None

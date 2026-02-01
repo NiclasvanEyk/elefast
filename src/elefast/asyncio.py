@@ -110,7 +110,7 @@ async def _prepare_async_database(
         statement = (
             f"CREATE DATABASE \"{database}\" ENCODING '{encoding}' TEMPLATE template0"
             if template is None
-            else f'CREATE DATABASE "{database}" WITH TEMPLATE "{template}"'
+            else f'CREATE DATABASE "{database}" WITH TEMPLATE "{template}" ENCODING \'{encoding}\''
         )
         await connection.execute(text(statement))
         await connection.commit()

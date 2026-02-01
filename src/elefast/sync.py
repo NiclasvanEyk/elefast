@@ -112,7 +112,7 @@ def _prepare_database(
         statement = (
             f"CREATE DATABASE \"{database}\" ENCODING '{encoding}' TEMPLATE template0"
             if template is None
-            else f'CREATE DATABASE "{database}" WITH TEMPLATE "{template}"'
+            else f'CREATE DATABASE "{database}" WITH TEMPLATE "{template}" ENCODING \'{encoding}\''
         )
         connection.execute(text(statement))
         connection.commit()

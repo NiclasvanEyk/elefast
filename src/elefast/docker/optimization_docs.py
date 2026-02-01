@@ -67,11 +67,6 @@ OPTIMIZATION_DOCS = {
         risk="Safe to disable; only affects complex analytical queries.",
         risk_factor=0.05,
     ),
-    "no_locale": OptimizationInfo(
-        gain="5-10% faster initialization, smaller memory footprint. Matters for container startup time.",
-        risk="Tests usually don't care about collation behavior.",
-        risk_factor=0.05,
-    ),
     "shared_buffers_mb": OptimizationInfo(
         gain="~10-20% improvement for working sets smaller than this value. Matters because test databases are usually small enough to fit entirely in buffers.",
         risk="If your test data is larger than 128MB, increase this value or set to None to use Postgres default.",
