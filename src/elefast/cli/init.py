@@ -73,7 +73,9 @@ def db_server() -> {class_prefix}DatabaseServer:
     db_url = explicit_url if explicit_url else docker.postgres("{driver}")
     # If you have a shared Base-class, import it above and use
     # `metadata=YourBaseClass.metadata` below.
-    return {class_prefix}DatabaseServer(db_url, metadata=None)
+    server = {class_prefix}DatabaseServer(db_url, metadata=None)
+    {maybe_await}server.ensure_is_ready()
+    return server
 
 
 @pytest.fixture

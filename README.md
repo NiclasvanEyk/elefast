@@ -26,7 +26,6 @@ mkdir tests/ && uv run elefast init >> tests/conftest.py
 create a test using your new set of fixtures
 
 ```python
-# tests/test_something_with_the_database.py
 from sqlalchemy import Connection, text
 
 def test_database_math(db_connection: Connection):
