@@ -30,6 +30,12 @@ Below are some copy-pastable commands for common options.
 
 Note that they include the `docker` extra, which you can omit if you don't want to use the Docker-specific functionality.
 
+There are also some other dependencies you most likely want to install:
+
+- A database driver such as `psycopg`, `psycopg2`, or `asyncpg`
+- `pytest` since you'll probably want to use it together with this library
+- `pytest-asyncio` if you intend to use an async driver
+
 ## Fixture Setup
 
 Once you installed the `elefast` package, you'll need to create some [Pytest fixtures](https://docs.pytest.org/en/stable/explanation/fixtures.html).
