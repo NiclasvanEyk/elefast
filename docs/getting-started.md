@@ -19,6 +19,14 @@ Below are some copy-pastable commands for common options.
     ```shell
     pip install 'elefast[docker]'
     ```
+=== "`poetry`"
+    ```shell
+    poetry add --dev 'elefast[docker]'
+    ```
+=== "`pdm`"
+    ```shell
+    pdm add --dev 'elefast[docker]'
+    ```
 
 Note that they include the `docker` extra, which you can omit if you don't want to use the Docker-specific functionality.
 
