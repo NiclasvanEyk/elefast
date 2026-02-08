@@ -60,6 +60,7 @@ def _init_command(
     class_prefix = "Async" if use_async else ""
     maybe_async = "async " if use_async else ""
     maybe_await = "await " if use_async else ""
+    fixture_module = "pytest_asyncio" if use_async else "pytest"
     template = f'''
 import os
     
@@ -67,8 +68,8 @@ import pytest
 from elefast import {class_prefix}Database, {class_prefix}DatabaseServer, docker
 
 
-@pytest.fixture(scope="session")
-def db_server() -> {class_prefix}DatabaseServer:
+@pytest.fixture(scope="session"{', loop_scope="session"' if use_async else ""})
+{maybe_async}def db_server() -> {class_prefix}DatabaseServer:
     explicit_url = os.getenv("TESTING_DB_URL")
     db_url = explicit_url if explicit_url else docker.postgres("{driver}")
     # If you have a shared Base-class, import it above and use
@@ -78,24 +79,30 @@ def db_server() -> {class_prefix}DatabaseServer:
     return server
 
 
-@pytest.fixture
+@{fixture_module}.fixture
 {maybe_async}def db(db_server: {class_prefix}DatabaseServer): 
     {maybe_async}with {maybe_await}db_server.create_database() as database:
         yield database
 
 
-@pytest.fixture
+@{fixture_module}.fixture
 {maybe_async}def db_connection(db: {class_prefix}Database):
     {maybe_async}with db.engine.begin() as connection:
         yield connection
 
 
-@pytest.fixture
+@{fixture_module}.fixture
 {maybe_async}def db_session(db: {class_prefix}Database):
     {maybe_async}with db.session() as session:
         yield session
     '''
     print(template.strip() + "\n")
+
+    if use_async:
+        print(
+            "NOTE: When using the async template, make sure to install 'pytest-asyncio' to allow the usage of async fixtures!",
+            file=stderr,
+        )
 
 
 def _figure_out_driver(driver: str | None) -> str:
