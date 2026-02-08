@@ -2,7 +2,7 @@
 icon: lucide/cloud-check
 ---
 
-# Continuus Integration
+# Continuous Integration
 
 Running your tests locally is nice, but it can be a pain to setup a continuus integration process that runs them on `git push`.
 On this site we list a few examples for popular providers.
