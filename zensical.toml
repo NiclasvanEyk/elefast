@@ -25,7 +25,6 @@ repo_name = "NiclasvanEyk/elefast"
 nav = [
    "index.md",
    "getting-started.md",
-   "best-practises.md",
    "recipes.md",
    "docker.md",
    "ci.md",
