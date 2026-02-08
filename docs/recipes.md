@@ -7,6 +7,47 @@ icon: lucide/chef-hat
 Since Elefast is very flexible, there is no one-size-fits-all solution.
 This page describes several copy-paste friendly examples to get you up and running regardless of your setup.
 
+## Supporting Existing Database Servers
+
+For some reasons it might be preferable to not always spawn a Docker container for your tests.
+Maybe your colleague does not like Docker and prefers running Postgres directly on their computer.
+Maybe your company policy prevents you from spawning Docker containers.
+Or maybe getting a Docker access in CI is more cumbersome than just spawning a Postgres through your CI provider (see the related section of this page).
+
+If only one of these reasons is true, you should provide a way to override the behavior in the `db_server` fixture.
+Again we can use environment variables:
+
+```python title="tests/conftest.py"
+import os
+from elefast import DatabaseServer, Database, docker
+
+@pytest.fixture(scope="session")
+def db_server() -> DatabaseServer:
+    db_url = os.getenv("TESTING_DB_URL")
+    if not db_url:
+        db_url = docker.postgres()
+    server = DatabaseServer(db_url)
+    server.ensure_is_ready()
+    return server
+```
+
+Now we try to read a database connection string from the `TESTING_DB_URL` environment variable.
+If it is not present we still start a Docker container.
+
+!!! tip
+    Use `.env` files and [`pytest-dotenv`](https://pypi.org/project/pytest-dotenv) to have an easier time setting `TESTING_DB_URL` when running `pytest`.
+
+## Parallelizing Using pytest-xdist
+
+This is more of a tip than a necessary adjustment, but since we create a database for each test, our tests are perfectly isolated.
+As a consequence, we can run them in parallel through [`pytest-xdist`](https://pypi.org/project/pytest-xdist).
+For smaller test suites this might actually increase the time required to run your tests.
+But once you approach 100+ test cases that need a database, running them in parallel can easily cut your total testing time in half.
+
+!!! note
+    While the database site is perfectly isolated, there still may be other parts of your test suite that relies on global variables or test execution order.
+    If your tests fail when run with `-n auto`, then you probably require more architectural effort to be able to parallelize your tests.
+
 ## Persistent Databases
 
 The `elefast init` command generates code that roughly looks like the following
@@ -145,5 +186,6 @@ and request it in the `async_postgres` fixture instead of the `db_url` one.
 
 [The `elefast-example-uv-monorepo` example](https://github.com/NiclasvanEyk/elefast-example-uv-monorepo) shows you how you can create a repo-local Pytest plugin in your `uv` workspace.
 
-<!-- ### Multiple Servers Or Databases -->
+<!-- ## Seed Data -->
 
+<!-- ## Migrations / Alembic -->

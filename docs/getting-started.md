@@ -261,7 +261,5 @@ def db(db_server: DatabaseServer, monkeypatch: pytest.MonkeyPatch):
 
 If you've coded along, you have a solid base to run your database-related tests locally.
 That base can be improved even further, e.g. by allowing
-If you are interested in making your fixture setup more flexible, head over to the [Best Practises](./best-practises.md).
-
-Otherwise there is a [recipes](./recipes.md) page documenting various other adjustments and code snippets that might be useful for your use case.
-They show you how to connect to your database using `async` / `await`, how you , or how to share fixtures in a monorepo.
+If you are interested in making your fixture setup more flexible, head over to the [list of recipes](./recipes.md).
+The code snippets over there show you how to connect to your database using `async` / `await`, how you , or how to share fixtures in a monorepo.
