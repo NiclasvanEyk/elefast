@@ -7,6 +7,7 @@ from collections.abc import Callable
 from contextlib import AbstractContextManager
 
 from sqlalchemy import URL, Engine, MetaData, text, create_engine, NullPool
+from sqlalchemy.schema import CreateSchema
 from sqlalchemy.orm import Session, sessionmaker
 
 
@@ -86,6 +87,13 @@ class DatabaseServer:
             )
             if self._metadata:
                 with engine.begin() as connection:
+                    schemas = {
+                        table.schema
+                        for table in self._metadata.tables.values()
+                        if table.schema is not None and table.schema != "public"
+                    }
+                    for schema in schemas:
+                        connection.execute(CreateSchema(schema, if_not_exists=True))
                     self._metadata.drop_all(bind=connection)
                     self._metadata.create_all(bind=connection)
             engine.dispose()

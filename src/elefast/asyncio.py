@@ -7,6 +7,7 @@ from contextlib import AbstractAsyncContextManager
 from uuid import uuid4
 
 from sqlalchemy import URL, MetaData, NullPool, text
+from sqlalchemy.schema import CreateSchema
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
@@ -92,6 +93,15 @@ class AsyncDatabaseServer:
             )
             if self._metadata:
                 async with engine.begin() as connection:
+                    schemas = {
+                        table.schema
+                        for table in self._metadata.tables.values()
+                        if table.schema is not None and table.schema != "public"
+                    }
+                    for schema in schemas:
+                        await connection.execute(
+                            CreateSchema(schema, if_not_exists=True)
+                        )
                     await connection.run_sync(self._metadata.drop_all)
                     await connection.run_sync(self._metadata.create_all)
             await engine.dispose()
