@@ -89,7 +89,7 @@ def _get_host_port_from_container(container: Container) -> int:
 
 
 def get_db_server_container(docker: DockerClient, name: str) -> Container | None:
-    containers = cast(list[Container], docker.containers.list(all=True))
+    containers = docker.containers.list(all=True)
     for container in containers:
         if container.name == name:
             if container.status == "exited":
