@@ -12,7 +12,7 @@ Our guiding principles are:
   You should not need to hand-roll hundreds of lines of code, just because you want your tests to cover actual database interaction.
   SQLAlchemy and Docker are not niche technologies, they are used by thousands of developers around the world.
 - **Speed** ⏱️
-  Using an actual database in your tests can slow thekm down significantly.
+  Using an actual database in your tests can slow them down significantly.
   E.g. launching a Postgres container using [Testcontainers](https://github.com/testcontainers/testcontainers-python#getting-started) takes almost 30 seconds[^1].
   With elefast, we'll ensure you'll pay as little startup costs as possible, while making it easy to avoid such waiting time all together by keeping the container around for future test runs.
 - **Less magic** 🪄

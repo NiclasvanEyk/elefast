@@ -45,7 +45,7 @@ For smaller test suites this might actually increase the time required to run yo
 But once you approach 100+ test cases that need a database, running them in parallel can easily cut your total testing time in half.
 
 !!! note
-    While the database site is perfectly isolated, there still may be other parts of your test suite that relies on global variables or test execution order.
+    While the database side is perfectly isolated, there still may be other parts of your test suite that relies on global variables or test execution order.
     If your tests fail when run with `-n auto`, then you probably require more architectural effort to be able to parallelize your tests.
 
 ## Persistent Databases
@@ -89,7 +89,7 @@ def db(db_server: DatabaseServer, request: pytest.FixtureRequest):
     return db_server.create_database(prefix=request.node.name)
 ```
 
-Now you can connect to the testing database with your datbabase explorer or `psql` and look for a database that starts with the name of your test case.
+Now you can connect to the testing database with your database explorer or `psql` and look for a database that starts with the name of your test case.
 Note that the name will be suffixed by a UUID to ensure uniqueness.
 
 ## Async
@@ -105,7 +105,7 @@ elefast init --async --driver=asyncpg
 ```
 
 Alternatively we have [an example project](https://github.com/NiclasvanEyk/elefast/tree/main/examples/fastapi-async) demonstrating the use of the async API.
-It also uses `pytest_asyncio` in [its fixtures](https://github.com/NiclasvanEyk/elefast//examples/fastapi-async).
+It also uses `pytest_asyncio` in [its fixtures](https://github.com/NiclasvanEyk/elefast/tree/main/examples/fastapi-async).
 
 ## Sync And Async
 

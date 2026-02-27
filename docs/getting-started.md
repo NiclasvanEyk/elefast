@@ -190,7 +190,7 @@ Imagine we are using the ORM and have a function `calculate_statistics`.
     @dataclass
     class Statistics:
         total_views: int
-   
+ 
     def calculate_statistics(db: Session): # (1)!
         return Statistics(
             total_views=db.scalar(select(func.count(Post.views)))

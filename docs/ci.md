@@ -4,7 +4,7 @@ icon: lucide/cloud-check
 
 # Continuous Integration
 
-Running your tests locally is nice, but it can be a pain to setup a continuus integration process that runs them on `git push`.
+Running your tests locally is nice, but it can be a pain to setup a continuous integration process that runs them on `git push`.
 On this site we list a few examples for popular providers.
 Note that we assume that you use the `docker` extra to automatically start a Postgres container when you run your tests.
 
@@ -13,7 +13,7 @@ Note that we assume that you use the `docker` extra to automatically start a Pos
     If your favorite CI provider is missing, feel free to contribute!
     This section of the documentation can benefit from a few more examples.
 
-## Github Actions
+## GitHub Actions
 
 GitHub makes it really easy, since they natively support Docker in their CI product.
 Just install your dependencies and run `pytest`:
