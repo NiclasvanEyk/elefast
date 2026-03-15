@@ -39,13 +39,13 @@ jobs:
       - run: pytest
 ```
 
-Elefast also runs test on GitHub actions, so feel free to take a look at [our workflows](https://github.com/NiclasvanEyk/elefast/tree/main/.github/workflows) if you are looking for a real-world example.
+Elefast also runs tests on GitHub Actions, so feel free to take a look at [our workflows](https://github.com/NiclasvanEyk/elefast/tree/main/.github/workflows) if you are looking for a real-world example.
 
 ## GitLab CI
 
 Getting Docker to be accessible in your CI scripts can be a pain.
 However, Gitlab supports [services](https://docs.gitlab.com/ci/services/), which can be used to start a Postgres container for a specific stage.
-Combine that with [supporting existing database services](./best-practises.md#supporting-existing-database-servers), e.g. by setting a `TESTING_DB_URL` environment variable, and you can get your tests to run pretty easily.
+Combine that with [supporting existing database services](./recipes.md#supporting-existing-database-servers), e.g. by setting a `TESTING_DB_URL` environment variable, and you can get your tests to run pretty easily.
 
 ```yaml
 stages:

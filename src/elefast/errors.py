@@ -1,5 +1,5 @@
 class ElefastError(Exception):
-    """The base class for errors of elefat"""
+    """The base class for errors of elefast"""
 
 
 class DatabaseNotReadyError(ElefastError):

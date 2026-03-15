@@ -45,7 +45,7 @@ For smaller test suites this might actually increase the time required to run yo
 But once you approach 100+ test cases that need a database, running them in parallel can easily cut your total testing time in half.
 
 !!! note
-    While the database side is perfectly isolated, there still may be other parts of your test suite that relies on global variables or test execution order.
+    While the database side is perfectly isolated, there still may be other parts of your test suite that rely on global variables or test execution order.
     If your tests fail when run with `-n auto`, then you probably require more architectural effort to be able to parallelize your tests.
 
 ## Persistent Databases
@@ -63,7 +63,7 @@ def db(db_server: DatabaseServer):
 # Utilities for connection to the database...
 ```
 
-As you can see, we use the context manager API provided by the `elefast.Database` instance that is returned from `db_server.create_database()`,
+As you can see, we use the context manager API provided by the `elefast.Database` instance that is returned from `db_server.create_database()`.
 This ensures that our databases that get created for each test are properly cleaned up after each test runs, even if it throws an exception.
 
 However, this behavior might not be what you want.
@@ -120,7 +120,7 @@ def db_url() -> sqlalchemy.URL:
     return start_and_get_postgres_container_url(driver="psycopg")
 ```
 
-Then we request the fixture in two fixtures to connect to the server, once in a sync and in an async way.
+Then we request the fixture in two fixtures to connect to the server, once synchronously and once asynchronously.
 
 ```python
 @pytest.fixture(scope="session")

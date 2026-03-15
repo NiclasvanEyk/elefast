@@ -11,7 +11,7 @@ STRICTLY_SYNC_DRIVERS = ["psycopg2", "pg8000"]
 def install_init_command(commands: ParentParser) -> None:
     init_command_parser = commands.add_parser(
         "init",
-        help="Helps you the recommended default fixtures",
+        help="Helps you set up the recommended default fixtures",
         description="Helps you get started with the recommended default fixtures by printing them to the screen. The output of this command is intended to be redirected into a file (e.g. `elefast init > conftest.py && mv conftest.py tests/`)",
     )
     init_command_parser.set_defaults(func=init_command)

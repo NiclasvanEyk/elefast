@@ -4,7 +4,7 @@ icon: lucide/rocket
 
 # Getting Started
 
-This guide will walk you to the steps from installation, configuring your fixtures using Elefasts utility functions, to finally using the database in your tests.
+This guide will walk you through the steps from installation, configuring your fixtures using Elefast's utility functions, to finally using the database in your tests.
 
 ## Installation
 
@@ -55,8 +55,8 @@ The following sections will walk you through the recommended set and explain eac
 ### Database Server
 
 Often times Postgres instances only consist of a single database often called `postgres`.
-However, Posgres is actually a database _server_ that can house multiple databases at once.
-We'll use this to our advantage, and use Elefasts utility functions to create a database per test.
+However, Postgres is actually a database _server_ that can house multiple databases at once.
+We'll use this to our advantage, and use Elefast's utility functions to create a database per test.
 This isolates our tests and makes sure that data written by `test_a` does not influence `test_b`.
 At the same time, it unlocks running our tests in parallel, e.g. using [the wonderful `pytest-xdist`](https://github.com/pytest-dev/pytest-xdist).
 
@@ -87,7 +87,7 @@ def db_server() -> DatabaseServer:
 As you can see, we create a `session`-scoped fixture. This just means that we'll run this code _once_ during the whole lifetime of a `pytest` execution / session ([Pytest docs](https://docs.pytest.org/en/stable/how-to/fixtures.html#scope-sharing-fixtures-across-classes-modules-packages-or-session)).
 
 We obtain a database URL from the `postgres` method of the `docker` extra, which automatically starts up a Docker container optimized for testing.
-If you don't use the `docker` extra, just pass a `sqlalchemy.URL` that points enables us to connect to an existing Postgres server.
+If you don't use the `docker` extra, just pass a `sqlalchemy.URL` that enables us to connect to an existing Postgres server.
 
 Finally, we also pass the table metadata object of our ORM base class.
 This enables Elefast to automatically create all the necessary database tables you need.
@@ -142,10 +142,14 @@ The latter creates an `sqlalchemy.orm.Session` that we can use to setup specific
 
 ### Usage In Tests
 
-To then 
+Now you can use the fixtures in your tests. Here's an example that uses the `db_connection` fixture we created:
 
 ```python title="tests/test_database_math.py"
---8<-- "../examples/simple-sync/tests/test_database_math.py"
+from sqlalchemy import Connection, text
+
+def test_database_math(db_connection: Connection):
+    result = db_connection.execute(text("SELECT 1 + 1")).scalar_one()
+    assert result == 2
 ```
 
 Now run `pytest` in your terminal, and you should see our test pass.
@@ -260,6 +264,6 @@ def db(db_server: DatabaseServer, monkeypatch: pytest.MonkeyPatch):
 ## Where To Go From Here
 
 If you've coded along, you have a solid base to run your database-related tests locally.
-That base can be improved even further, e.g. by allowing
+That base can be improved even further, e.g. by enabling parallel test execution.
 If you are interested in making your fixture setup more flexible, head over to the [list of recipes](./recipes.md).
 The code snippets over there show you how to connect to your database using `async` / `await`, how you , or how to share fixtures in a monorepo.
