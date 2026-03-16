@@ -26,9 +26,7 @@ def db_server() -> DatabaseServer:
     db_url = os.getenv("TESTING_DB_URL")
     if not db_url:
         db_url = docker.postgres()
-    server = DatabaseServer(db_url)
-    server.ensure_is_ready()
-    return server
+    return DatabaseServer(db_url).ensure_is_ready()
 ```
 
 Now we try to read a database connection string from the `TESTING_DB_URL` environment variable.

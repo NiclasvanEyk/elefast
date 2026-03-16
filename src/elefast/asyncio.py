@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import Self
 
 import time
 from asyncio import sleep
@@ -64,7 +65,7 @@ class AsyncDatabaseServer:
 
     async def ensure_is_ready(
         self, timeout: int | float = 30, interval: int | float = 0.5
-    ) -> None:
+    ) -> Self:
         deadline = time.monotonic() + timeout
         attempts = 0
 
@@ -72,7 +73,7 @@ class AsyncDatabaseServer:
             try:
                 async with self._engine.connect() as conn:
                     await conn.execute(text("SELECT 1"))
-                return
+                return self
             except Exception as error:
                 attempts += 1
                 if time.monotonic() >= deadline:

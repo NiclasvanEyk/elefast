@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import Self
 from uuid import uuid4
 import time
 from elefast.errors import DatabaseNotReadyError
@@ -58,7 +59,7 @@ class DatabaseServer:
 
     def ensure_is_ready(
         self, timeout: int | float = 30, interval: int | float = 0.5
-    ) -> None:
+    ) -> Self:
         deadline = time.monotonic() + timeout
         attempts = 0
 
@@ -66,7 +67,7 @@ class DatabaseServer:
             try:
                 with self._engine.connect() as conn:
                     conn.execute(text("SELECT 1"))
-                return
+                return self
             except Exception as error:
                 attempts += 1
                 if time.monotonic() >= deadline:

@@ -75,8 +75,7 @@ from elefast import {class_prefix}Database, {class_prefix}DatabaseServer, docker
     # If you have a shared Base-class, import it above and use
     # `metadata=YourBaseClass.metadata` below.
     server = {class_prefix}DatabaseServer(db_url, metadata=None)
-    {maybe_await}server.ensure_is_ready()
-    return server
+    return {maybe_await}server.ensure_is_ready()
 
 
 @{fixture_module}.fixture
