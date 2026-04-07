@@ -1,3 +1,4 @@
 from argparse import _SubParsersAction, ArgumentParser
+from typing import TypeAlias
 
-type ParentParser = _SubParsersAction[ArgumentParser]
+ParentParser: TypeAlias = _SubParsersAction[ArgumentParser]

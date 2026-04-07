@@ -1,5 +1,6 @@
 from __future__ import annotations
-from typing import Self
+from typing import TypeAlias
+from typing_extensions import Self
 from uuid import uuid4
 import time
 from elefast.errors import DatabaseNotReadyError
@@ -12,7 +13,7 @@ from sqlalchemy.schema import CreateSchema
 from sqlalchemy.orm import Session, sessionmaker
 
 
-type CanBeTurnedIntoEngine = Engine | URL | str
+CanBeTurnedIntoEngine: TypeAlias = "Engine | URL | str"
 
 
 class Database(AbstractContextManager):

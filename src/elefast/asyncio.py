@@ -1,5 +1,6 @@
 from __future__ import annotations
-from typing import Self
+from typing import TypeAlias
+from typing_extensions import Self
 
 import time
 from asyncio import sleep
@@ -18,7 +19,7 @@ from sqlalchemy.ext.asyncio import (
 
 from elefast.errors import DatabaseNotReadyError
 
-type CanBeTurnedIntoAsyncEngine = AsyncEngine | URL | str
+CanBeTurnedIntoAsyncEngine: TypeAlias = "AsyncEngine | URL | str"
 
 
 class AsyncDatabase(AbstractAsyncContextManager):
