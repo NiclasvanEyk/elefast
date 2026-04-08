@@ -5,6 +5,7 @@ import time
 from dataclasses import dataclass, replace
 
 import psycopg2
+import psycopg2.extensions  # type: ignore[possibly-missing-import]  # noqa: F401
 from docker import DockerClient
 
 from elefast.docker.configuration import Configuration, Optimizations
