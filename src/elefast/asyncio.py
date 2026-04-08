@@ -1,6 +1,5 @@
 from __future__ import annotations
-from typing import TypeAlias
-from typing_extensions import Self
+from typing import Self, TypeAlias
 
 import time
 from asyncio import sleep

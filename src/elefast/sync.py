@@ -1,6 +1,5 @@
 from __future__ import annotations
-from typing import TypeAlias
-from typing_extensions import Self
+from typing import Self, TypeAlias
 from uuid import uuid4
 import time
 from elefast.errors import DatabaseNotReadyError
