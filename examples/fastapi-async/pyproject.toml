@@ -3,7 +3,7 @@ name = "elefast-example-fastapi-async"
 version = "0.1.0"
 description = "An example showing how to test your FastAPI app with elefast"
 readme = "README.md"
-requires-python = ">=3.14"
+requires-python = ">=3.10"
 dependencies = [
     "asyncpg>=0.31.0",
     "fastapi[standard]>=0.128.0",

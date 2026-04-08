@@ -3,7 +3,7 @@ name = "benchmarks"
 version = "0.1.0"
 description = "Benchmarking tools for elefast"
 readme = "README.md"
-requires-python = ">=3.14"
+requires-python = ">=3.10"
 dependencies = [
     "elefast[docker]",
     "psycopg2-binary>=2.9.0",
