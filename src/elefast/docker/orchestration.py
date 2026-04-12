@@ -1,3 +1,4 @@
+from os import getenv
 import socket
 from typing import cast
 
@@ -24,7 +25,8 @@ def _resolve_database_port(
     database_port: tuple[int, int | None] | None,
 ) -> tuple[int, int]:
     if database_port is None:
-        return 5432, find_free_port()
+        external_port = getenv("ELEFAST_HOST_PORT", None)
+        return 5432, int(external_port) if external_port else find_free_port()
     if isinstance(database_port, tuple):
         if len(database_port) != 2:
             raise ValueError(
