@@ -3,7 +3,7 @@ name = "elefast-example-simple-sync"
 version = "0.1.0"
 description = "An example showing how to test synchronous databases with Elefast"
 readme = "README.md"
-requires-python = ">=3.14"
+requires-python = ">=3.10"
 dependencies = [
     "psycopg2-binary>=2.9.11",
     "sqlalchemy>=2.0.45",

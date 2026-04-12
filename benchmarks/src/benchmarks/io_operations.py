@@ -5,6 +5,7 @@ import time
 from dataclasses import dataclass, replace
 
 import psycopg2
+import psycopg2.extensions  # type: ignore[possibly-missing-import]  # noqa: F401
 from docker import DockerClient
 
 from elefast.docker.configuration import Configuration, Optimizations
@@ -299,7 +300,6 @@ def benchmark_scenario(
         "disable_archiving": optimizations.disable_archiving,
         "autovacuum_off": optimizations.autovacuum_off,
         "jit_off": optimizations.jit_off,
-        "no_locale": optimizations.no_locale,
         "shared_buffers_mb": optimizations.shared_buffers_mb,
         "work_mem_mb": optimizations.work_mem_mb,
         "maintenance_work_mem_mb": optimizations.maintenance_work_mem_mb,
@@ -336,7 +336,6 @@ def run_benchmarks(runs: int = 1) -> list[IOBenchmarkResult]:
                 disable_archiving=False,
                 autovacuum_off=False,
                 jit_off=False,
-                no_locale=False,
                 shared_buffers_mb=None,
                 checkpoint_timeout_seconds=None,
                 disable_statement_logging=False,
@@ -354,7 +353,6 @@ def run_benchmarks(runs: int = 1) -> list[IOBenchmarkResult]:
                 disable_archiving=False,
                 autovacuum_off=False,
                 jit_off=False,
-                no_locale=False,
                 shared_buffers_mb=None,
                 checkpoint_timeout_seconds=None,
                 disable_statement_logging=False,

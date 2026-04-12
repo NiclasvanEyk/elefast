@@ -3,19 +3,20 @@ name = "elefast"
 version = "0.1.0a5"
 description = "Database testing toolkit integrating Postgres, SQLAlchemy, Pytest and Docker"
 readme = "README.md"
-authors = []
-requires-python = ">=3.14"
+authors = [{ name = "Niclas van Eyk", email = "hi@niclasve.me" }]
+requires-python = ">=3.11"
 dependencies = [
     "sqlalchemy>=2.0.45",
 ]
 license = "MIT"
 classifiers = [
     "Development Status :: 3 - Alpha",
-    "License :: OSI Approved :: MIT License",
     "Framework :: AsyncIO",
     "Framework :: Pytest",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Education :: Testing",
     "Topic :: Software Development :: Testing",
     "Topic :: Software Development :: Documentation",
