@@ -1,5 +1,7 @@
 import pytest
-from elefast import DatabaseServer, Database, docker
+
+from elefast import Database, DatabaseServer
+from elefast.extras import docker
 
 
 @pytest.fixture(scope="session")

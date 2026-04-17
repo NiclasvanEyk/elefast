@@ -1,22 +1,23 @@
-"""Tests for the elefast.docker.orchestration module."""
+"""Tests for the elefast.extras.docker.orchestration module."""
 
 from unittest.mock import MagicMock, patch
+
 import pytest
 
-from elefast.docker.orchestration import (
-    find_free_port,
-    _resolve_database_port,
-    get_db_server_container,
-    get_docker,
-    _get_host_port_from_container,
-    ensure_db_server_started,
-    start_db_server_container,
-)
-from elefast.docker.configuration import (
+from elefast.extras.docker.configuration import (
     Configuration,
-    Optimizations,
     Container,
     Credentials,
+    Optimizations,
+)
+from elefast.extras.docker.orchestration import (
+    _get_host_port_from_container,
+    _resolve_database_port,
+    ensure_db_server_started,
+    find_free_port,
+    get_db_server_container,
+    get_docker,
+    start_db_server_container,
 )
 
 
@@ -168,7 +169,7 @@ class TestEnsureDbServerStarted:
         assert host_port == 54321
         client.containers.run.assert_not_called()
 
-    @patch("elefast.docker.orchestration.start_db_server_container")
+    @patch("elefast.extras.docker.orchestration.start_db_server_container")
     def test_ensure_db_server_started_new(self, mock_start, mock_docker_container):
         """Test starting a new container when none exists."""
         client = MagicMock()
@@ -192,7 +193,7 @@ class TestStartDbServerContainer:
         client.containers.run.return_value = mock_docker_container
         config = Configuration()
 
-        container, host_port = start_db_server_container(
+        container, _host_port = start_db_server_container(
             client, config, keep_container_around=True
         )
 
@@ -218,7 +219,7 @@ class TestStartDbServerContainer:
         )
         config = Configuration(optimizations=optimizations)
 
-        container, host_port = start_db_server_container(
+        _container, _host_port = start_db_server_container(
             client, config, keep_container_around=True
         )
 
@@ -239,7 +240,7 @@ class TestStartDbServerContainer:
         credentials = Credentials(user="admin", password="secret", host="0.0.0.0")
         config = Configuration(credentials=credentials)
 
-        container, host_port = start_db_server_container(
+        _container, _host_port = start_db_server_container(
             client, config, keep_container_around=True
         )
 
@@ -262,7 +263,7 @@ class TestStartDbServerContainer:
         )
         config = Configuration(container=container_config)
 
-        container, host_port = start_db_server_container(
+        _container, _host_port = start_db_server_container(
             client, config, keep_container_around=True
         )
 
@@ -279,7 +280,7 @@ class TestStartDbServerContainer:
         optimizations = Optimizations(tmpfs=True)
         config = Configuration(optimizations=optimizations)
 
-        container, host_port = start_db_server_container(
+        _container, _host_port = start_db_server_container(
             client, config, keep_container_around=True
         )
 
@@ -296,7 +297,7 @@ class TestStartDbServerContainer:
         optimizations = Optimizations(tmpfs=512)  # 512 MB
         config = Configuration(optimizations=optimizations)
 
-        container, host_port = start_db_server_container(
+        _container, _host_port = start_db_server_container(
             client, config, keep_container_around=True
         )
 
@@ -313,7 +314,7 @@ class TestStartDbServerContainer:
         optimizations = Optimizations(tmpfs=False)
         config = Configuration(optimizations=optimizations)
 
-        container, host_port = start_db_server_container(
+        _container, _host_port = start_db_server_container(
             client, config, keep_container_around=True
         )
 
@@ -328,7 +329,7 @@ class TestStartDbServerContainer:
         client.containers.run.return_value = mock_docker_container
         config = Configuration()
 
-        container, host_port = start_db_server_container(
+        _container, _host_port = start_db_server_container(
             client, config, keep_container_around=False
         )
 
@@ -361,7 +362,7 @@ class TestStartDbServerContainer:
         )
         config = Configuration(optimizations=optimizations)
 
-        container, host_port = start_db_server_container(
+        _container, _host_port = start_db_server_container(
             client, config, keep_container_around=True
         )
 
@@ -377,7 +378,7 @@ class TestStartDbServerContainer:
 class TestGetDocker:
     """Tests for the get_docker function."""
 
-    @patch("elefast.docker.orchestration.DockerClient")
+    @patch("elefast.extras.docker.orchestration.DockerClient")
     def test_get_docker_returns_client(self, mock_docker_class):
         """Test that get_docker returns a DockerClient."""
         mock_docker_class.from_env.return_value = MagicMock()
@@ -388,9 +389,9 @@ class TestGetDocker:
 class TestEnsureDbServerStartedDefaults:
     """Tests for ensure_db_server_started with default parameters."""
 
-    @patch("elefast.docker.orchestration.Configuration")
-    @patch("elefast.docker.orchestration.get_docker")
-    @patch("elefast.docker.orchestration.get_db_server_container")
+    @patch("elefast.extras.docker.orchestration.Configuration")
+    @patch("elefast.extras.docker.orchestration.get_docker")
+    @patch("elefast.extras.docker.orchestration.get_db_server_container")
     def test_ensure_db_server_started_default_docker(
         self, mock_get_container, mock_get_docker, mock_config_class
     ):
@@ -403,13 +404,13 @@ class TestEnsureDbServerStartedDefaults:
         mock_container.attrs = {"Config": {"Env": ["ELEFAST_POSTGRES_HOST_PORT=54321"]}}
         mock_get_container.return_value = mock_container
 
-        container, host_port = ensure_db_server_started()
+        _container, _host_port = ensure_db_server_started()
 
         mock_get_docker.assert_called_once()
         mock_config_class.assert_called_once()
 
-    @patch("elefast.docker.orchestration.Configuration")
-    @patch("elefast.docker.orchestration.get_db_server_container")
+    @patch("elefast.extras.docker.orchestration.Configuration")
+    @patch("elefast.extras.docker.orchestration.get_db_server_container")
     def test_ensure_db_server_started_default_config(
         self, mock_get_container, mock_config_class
     ):
@@ -421,7 +422,7 @@ class TestEnsureDbServerStartedDefaults:
         mock_container.attrs = {"Config": {"Env": ["ELEFAST_POSTGRES_HOST_PORT=54321"]}}
         mock_get_container.return_value = mock_container
 
-        container, host_port = ensure_db_server_started(docker=mock_docker)
+        _container, _host_port = ensure_db_server_started(docker=mock_docker)
 
         mock_config_class.assert_called_once()
 

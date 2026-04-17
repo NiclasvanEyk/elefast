@@ -1,5 +1,6 @@
-from elefast.cli.init import install_init_command
 from argparse import ArgumentParser
+
+from elefast.cli.init import install_init_command
 
 
 def build_parser() -> ArgumentParser:

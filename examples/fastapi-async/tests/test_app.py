@@ -1,10 +1,10 @@
 from itertools import product
+
 import pytest
+from elefast_example_fastapi_async.app import FullPost, PostExcerpt
+from elefast_example_fastapi_async.database import Post
 from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from elefast_example_fastapi_async.database import Post
-from elefast_example_fastapi_async.app import PostExcerpt, FullPost
 
 
 @pytest.mark.asyncio

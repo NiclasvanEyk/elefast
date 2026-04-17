@@ -10,7 +10,7 @@ class Optimizations:
     of durability guarantees and crash recovery. They're safe for isolated test databases
     that don't need to survive container restarts.
 
-    See `elefast.docker.optimization_docs.OPTIMIZATION_DOCS` for detailed information about
+    See `elefast.extras.docker.optimization_docs.OPTIMIZATION_DOCS` for detailed information about
     each setting, including performance gains, risks, and when to disable them.
     """
 

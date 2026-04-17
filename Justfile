@@ -1,3 +1,7 @@
+# Syncs all dependencies
+sync:
+    uv sync --all-packages --all-extras
+
 # Serves the documentation locally
 docs:
     uv run zensical serve

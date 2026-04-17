@@ -1,18 +1,39 @@
 from __future__ import annotations
-from typing import Self, TypeAlias
-from uuid import uuid4
-import time
-from elefast.errors import DatabaseNotReadyError
 
+import time
 from collections.abc import Callable
 from contextlib import AbstractContextManager
+from typing import Protocol, Self, TypeAlias
+from uuid import uuid4
 
-from sqlalchemy import URL, Engine, MetaData, text, create_engine, NullPool
-from sqlalchemy.schema import CreateSchema
+from sqlalchemy import URL, Connection, Engine, MetaData, NullPool, create_engine, text
 from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.schema import CreateSchema
 
+from elefast.errors import DatabaseNotReadyError
 
 CanBeTurnedIntoEngine: TypeAlias = "Engine | URL | str"
+
+
+class Migrator(Protocol):
+    def migrate(self, connection: Connection) -> None:
+        pass
+
+
+class MetadataMigrator(Migrator):
+    def __init__(self, metadata: MetaData) -> None:
+        self._metadata = metadata
+
+    def migrate(self, connection: Connection) -> None:
+        schemas = {
+            table.schema
+            for table in self._metadata.tables.values()
+            if table.schema is not None and table.schema != "public"
+        }
+        for schema in schemas:
+            connection.execute(CreateSchema(schema, if_not_exists=True))
+        self._metadata.drop_all(bind=connection)
+        self._metadata.create_all(bind=connection)
 
 
 class Database(AbstractContextManager):
@@ -47,9 +68,10 @@ class DatabaseServer:
     def __init__(
         self,
         engine: CanBeTurnedIntoEngine,
-        metadata: MetaData | None = None,
+        schema: Migrator | None = None,
+        debug=False,
     ) -> None:
-        self._metadata = metadata
+        self._migrator = schema
         self._engine = _build_engine(engine)
         self._template_db_name: str | None = None
 
@@ -86,17 +108,10 @@ class DatabaseServer:
             engine = _prepare_database(
                 self._engine, encoding=encoding, prefix="elefast-template-db"
             )
-            if self._metadata:
+            if self._migrator:
                 with engine.begin() as connection:
-                    schemas = {
-                        table.schema
-                        for table in self._metadata.tables.values()
-                        if table.schema is not None and table.schema != "public"
-                    }
-                    for schema in schemas:
-                        connection.execute(CreateSchema(schema, if_not_exists=True))
-                    self._metadata.drop_all(bind=connection)
-                    self._metadata.create_all(bind=connection)
+                    self._migrator.migrate(connection)
+                    connection.commit()
             engine.dispose()
             template_db = engine.url.database
             assert isinstance(template_db, str)

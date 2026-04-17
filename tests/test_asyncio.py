@@ -1,12 +1,14 @@
 """Tests for the elefast.asyncio module."""
 
 from unittest.mock import AsyncMock, MagicMock, patch
+
 import pytest
 from sqlalchemy import URL
 
 from elefast.asyncio import (
     AsyncDatabase,
     AsyncDatabaseServer,
+    AsyncMetadataMigrator,
     _build_engine,
     _prepare_async_database,
 )
@@ -239,7 +241,9 @@ class TestAsyncDatabaseServerCreateDatabase:
         mock_new_engine.dispose = AsyncMock()
         mock_prepare.return_value = mock_new_engine
 
-        server = AsyncDatabaseServer(engine=mock_async_engine, metadata=sample_metadata)
+        server = AsyncDatabaseServer(
+            engine=mock_async_engine, schema=AsyncMetadataMigrator(sample_metadata)
+        )
         db = await server.create_database(prefix="elefast-db")
 
         assert isinstance(db, AsyncDatabase)
@@ -256,7 +260,9 @@ class TestAsyncDatabaseServerCreateDatabase:
         mock_new_engine.dispose = AsyncMock()
         mock_prepare.return_value = mock_new_engine
 
-        server = AsyncDatabaseServer(engine=mock_async_engine, metadata=sample_metadata)
+        server = AsyncDatabaseServer(
+            engine=mock_async_engine, schema=AsyncMetadataMigrator(sample_metadata)
+        )
 
         # First database - creates template
         _ = await server.create_database(prefix="elefast-db")
@@ -285,7 +291,8 @@ class TestAsyncDatabaseServerCreateDatabase:
         mock_prepare.return_value = mock_new_engine
 
         server = AsyncDatabaseServer(
-            engine=mock_async_engine, metadata=sample_metadata_with_schema
+            engine=mock_async_engine,
+            schema=AsyncMetadataMigrator(sample_metadata_with_schema),
         )
         db = await server.create_database(prefix="elefast-db")
 

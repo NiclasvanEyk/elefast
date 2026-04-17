@@ -8,7 +8,7 @@ This guide will walk you through the steps from installation, configuring your f
 
 ## Installation
 
-Elefast is available on PyPi, so you should be able to install it using your preferred package manager.
+Elefast is [available on PyPi](https://pypi.org/project/elefast), so you should be able to install it using your preferred package manager.
 Below are some copy-pastable commands for common options.
 
 === "`uv`"
@@ -72,7 +72,8 @@ The first fixture is already the most important one, which sets up our database 
 
 ```python title="tests/conftest.py"
 import pytest
-from elefast import DatabaseServer, Database, docker
+from elefast import DatabaseServer, Database, 
+from elefast.extras import docker
 
 from my_app.database.models import Base # (1)!
 

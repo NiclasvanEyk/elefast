@@ -22,21 +22,37 @@ Our guiding principles are:
 
 The result is readable and performant test code like the following:
 
-```python hl_lines="3"
-from sqlalchemy import Connection, text
+```python
+from elefast import Database
+from sqlalchemy import Connection, text, orm, select
+from my_app import models
 
-def test_that_uses_the_database(db_connection: Connection):  # (1)!
+
+# Conveniently use a raw sqlalchemy.Connection
+def test_raw_connection(db_connection: Connection):  # (1)!
     result = db_connection.execute(text("1 + 1"))
     assert 2 == result
-```
 
-1. The `db_connection` fixture is written by you, but with the help of Elefast utility functions
+# Or an orm session
+def test_orm(db_session: orm.Session):
+    posts = db_session.scalars(select(models.Post)).all()
+    assert posts[0].title == "Test Title Defined In Fixture"
+
+# Or both!
+def test_elefast(db: Database):
+    with db.session() as session:
+        posts = db_session.scalars(select(models.Post)).all()
+        assert posts[0].title == "Test Title Defined In Fixture"
+    with db.connection() as connection:
+        result = db_connection.execute(text("1 + 1"))
+        assert 2 == result
+```
 
 When you run your tests with `pytest`, Elefast will
 
 1. _(optional)_ Start an optimized Postgres container if one is not already running.
 2. Create a fresh database, just for the test.
-3. _(optional)_ Create the necessary table structures.
+3. _(optional)_ Create the necessary table structures. (Either via [sqlalchemy](./integrations.md#sqlalchemy))
 4. Pass the `Connection` object to the test.
 
 This saves you from mocking DB logic, coming up with your own way of doing all of this.

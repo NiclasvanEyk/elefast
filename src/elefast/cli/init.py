@@ -61,11 +61,14 @@ def _init_command(
     maybe_async = "async " if use_async else ""
     maybe_await = "await " if use_async else ""
     fixture_module = "pytest_asyncio" if use_async else "pytest"
+
+    # TODO: Only import docker extra if added!
     template = f'''
 import os
     
 import pytest
-from elefast import {class_prefix}Database, {class_prefix}DatabaseServer, docker
+from elefast import {class_prefix}Database, {class_prefix}DatabaseServer, 
+from elefat.extras import docker
 
 
 @pytest.fixture(scope="session"{', loop_scope="session"' if use_async else ""})

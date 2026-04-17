@@ -7,9 +7,10 @@ from dataclasses import dataclass, replace
 import psycopg2
 import psycopg2.extensions  # type: ignore[possibly-missing-import]  # noqa: F401
 from docker import DockerClient
+from psycopg2.extensions import connection as Connection
 
-from elefast.docker.configuration import Configuration, Optimizations
-from elefast.docker.orchestration import (
+from elefast.extras.docker.configuration import Configuration, Optimizations
+from elefast.extras.docker.orchestration import (
     ensure_db_server_started,
     get_db_server_container,
     get_docker,
@@ -69,7 +70,7 @@ def wait_for_postgres(
     raise TimeoutError(f"PostgreSQL did not become ready after {timeout} seconds")
 
 
-def setup_test_table(conn: psycopg2.extensions.connection) -> None:
+def setup_test_table(conn: Connection) -> None:
     """Create the test table."""
     with conn.cursor() as cur:
         cur.execute("DROP TABLE IF EXISTS bench_data CASCADE")
@@ -84,9 +85,7 @@ def setup_test_table(conn: psycopg2.extensions.connection) -> None:
     conn.commit()
 
 
-def benchmark_bulk_insert(
-    conn: psycopg2.extensions.connection,
-) -> tuple[int, float]:
+def benchmark_bulk_insert(conn: Connection) -> tuple[int, float]:
     """Benchmark: Insert 10k rows in a single transaction.
 
     Returns:
@@ -114,9 +113,7 @@ def benchmark_bulk_insert(
     return row_count, duration
 
 
-def benchmark_individual_inserts(
-    conn: psycopg2.extensions.connection,
-) -> tuple[int, float]:
+def benchmark_individual_inserts(conn: Connection) -> tuple[int, float]:
     """Benchmark: Insert 1k rows with individual transactions.
 
     Returns:
@@ -144,9 +141,7 @@ def benchmark_individual_inserts(
     return row_count, duration
 
 
-def benchmark_random_updates(
-    conn: psycopg2.extensions.connection,
-) -> tuple[int, float]:
+def benchmark_random_updates(conn: Connection) -> tuple[int, float]:
     """Benchmark: Update 5k random rows with individual transactions.
 
     Returns:
@@ -182,9 +177,7 @@ def benchmark_random_updates(
     return row_count, duration
 
 
-def benchmark_mixed_workload(
-    conn: psycopg2.extensions.connection,
-) -> tuple[int, float]:
+def benchmark_mixed_workload(conn: Connection) -> tuple[int, float]:
     """Benchmark: Mixed workload (setup 5k inserts, then 1k mixed ops).
 
     Returns:
@@ -255,7 +248,7 @@ def benchmark_scenario(
     )
 
     # Start container (don't measure startup time)
-    container, host_port = ensure_db_server_started(
+    _container, host_port = ensure_db_server_started(
         docker=docker,
         config=config,
         keep_container_around=True,

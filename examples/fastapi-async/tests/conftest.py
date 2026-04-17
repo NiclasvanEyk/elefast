@@ -1,13 +1,14 @@
-from fastapi.testclient import TestClient
 from os import getenv
 
 import pytest
 import pytest_asyncio
-from elefast import AsyncDatabaseServer, AsyncDatabase
-from elefast.docker import postgres as start_and_get_postgres_container_url
-
-from elefast_example_fastapi_async.database import Base
 from elefast_example_fastapi_async.app import app
+from elefast_example_fastapi_async.database import Base
+from fastapi.testclient import TestClient
+
+from elefast import AsyncDatabase, AsyncDatabaseServer
+from elefast.asyncio import AsyncMetadataMigrator
+from elefast.extras.docker import postgres as start_and_get_postgres_container_url
 
 
 @pytest_asyncio.fixture(scope="session", loop_scope="session")
@@ -15,7 +16,7 @@ async def postgres():
     url = getenv("TESTING_DB_URL") or start_and_get_postgres_container_url(
         driver="asyncpg"
     )
-    server = AsyncDatabaseServer(url, metadata=Base.metadata)
+    server = AsyncDatabaseServer(url, schema=AsyncMetadataMigrator(Base.metadata))
     await server.ensure_is_ready()
     return server
 
