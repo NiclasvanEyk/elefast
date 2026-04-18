@@ -1,13 +1,17 @@
 import os
+from collections.abc import Iterator
+from contextlib import contextmanager
 from logging.config import fileConfig
 
 from alembic import context
-from sqlalchemy import create_engine, pool
+from sqlalchemy import Connection, engine_from_config, pool
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
-url = os.environ['ELEFAST_ALEMBIC_EXAMPLE_TESTING_DB_URL'] 
+config.set_main_option(
+    "sqlalchemy.url", os.environ["ELEFAST_ALEMBIC_EXAMPLE_TESTING_DB_URL"]
+)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
@@ -38,6 +42,7 @@ def run_migrations_offline() -> None:
     script output.
 
     """
+    url = config.get_main_option("sqlalchemy.url")
     context.configure(
         url=url,
         target_metadata=target_metadata,
@@ -48,6 +53,19 @@ def run_migrations_offline() -> None:
     with context.begin_transaction():
         context.run_migrations()
 
+@contextmanager
+def get_connection() -> Iterator[Connection]:
+    connection = config.attributes.get("connection") 
+    if isinstance(connection, Connection):
+        yield connection
+    else:
+        connectable = engine_from_config(
+            config.get_section(config.config_ini_section, {}), 
+            prefix="sqlalchemy.", 
+            poolclass=pool.NullPool,
+        )
+        yield connectable.connect()
+
 
 def run_migrations_online() -> None:
     """Run migrations in 'online' mode.
@@ -56,18 +74,12 @@ def run_migrations_online() -> None:
     and associate a connection with the context.
 
     """
-    connectable = create_engine(
-        url=url,
-        poolclass=pool.NullPool
-    )
-
-    with connectable.connect() as connection:
-        context.configure(
-            connection=connection, target_metadata=target_metadata
-        )
-
+    with get_connection() as connection:
+        # Connection provided directly - use it (no context manager)
+        context.configure(connection=connection, target_metadata=target_metadata)
         with context.begin_transaction():
             context.run_migrations()
+            return
 
 
 if context.is_offline_mode():
