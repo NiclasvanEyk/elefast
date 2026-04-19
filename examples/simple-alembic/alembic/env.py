@@ -53,15 +53,16 @@ def run_migrations_offline() -> None:
     with context.begin_transaction():
         context.run_migrations()
 
+
 @contextmanager
 def get_connection() -> Iterator[Connection]:
-    connection = config.attributes.get("connection") 
+    connection = config.attributes.get("connection")
     if isinstance(connection, Connection):
         yield connection
     else:
         connectable = engine_from_config(
-            config.get_section(config.config_ini_section, {}), 
-            prefix="sqlalchemy.", 
+            config.get_section(config.config_ini_section, {}),
+            prefix="sqlalchemy.",
             poolclass=pool.NullPool,
         )
         yield connectable.connect()
