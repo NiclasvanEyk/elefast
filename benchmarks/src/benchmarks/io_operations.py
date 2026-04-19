@@ -5,7 +5,7 @@ import time
 from dataclasses import dataclass, replace
 
 import psycopg2
-import psycopg2.extensions  # type: ignore[possibly-missing-import]  # noqa: F401
+import psycopg2.extensions  # type: ignore[possibly-missing-import]
 from docker import DockerClient
 from psycopg2.extensions import connection as Connection
 

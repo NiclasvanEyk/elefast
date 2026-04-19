@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 import pytest
-from sqlalchemy import NullPool, URL, create_engine, make_url
+from sqlalchemy import NullPool, create_engine, make_url
 
 from elefast import Database, DatabaseServer
 from elefast.extras import alembic, docker
