@@ -31,12 +31,16 @@ docker = [
 alembic = [
     "alembic>=1.18.4",
 ]
+full = [
+    "alembic",
+    "docker",
+]
 
 [project.scripts]
 elefast = "elefast.cli:main"
 
 [build-system]
-requires = ["uv_build>=0.9.18,<0.10.0"]
+requires = ["uv_build>=0.9.18,<0.11.0"]
 build-backend = "uv_build"
 
 [dependency-groups]
