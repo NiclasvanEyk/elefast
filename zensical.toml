@@ -30,6 +30,7 @@ nav = [
    "recipes.md",
    "integrations.md",
    "ci.md",
+   "reference.md",
 ]
 
 # ----------------------------------------------------------------------------
@@ -281,3 +282,24 @@ link = "https://github.com/NiclasvanEyk/elefast"
 [[project.extra.social]]
 icon = "fontawesome/brands/python"
 link = "https://pypi.org/project/elefast"
+
+[project.plugins.mkdocstrings.handlers.python]
+inventories = ["https://docs.python.org/3/objects.inv"]
+paths = ["src"]
+
+[project.plugins.mkdocstrings.handlers.python.options]
+docstring_style = "google"
+default_handler = "python"
+show_source = false
+group_by_category = false
+show_labels = false
+inherited_members = false
+show_if_no_docstring = true
+show_root_heading = true
+show_signature_annotations = true
+modernize_annotations = true
+separate_signature = true
+signature_crossrefs = true
+merge_init_into_class = true
+filters = ["!^_"]
+
