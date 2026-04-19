@@ -1,9 +1,10 @@
-from pydantic import BaseModel
 from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
 from sqlalchemy import select
 
-from elefast_example_fastapi_async.database import get_db, Post
+from elefast_example_fastapi_async.database import Post, get_db
 from elefast_example_fastapi_async.dependencies import DbSessionDep
 
 

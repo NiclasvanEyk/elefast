@@ -1,0 +1,17 @@
+[project]
+name = "simple-alembic"
+version = "0.1.0"
+description = "A simple demo project for showcasing elefast usage with alembic"
+readme = "README.md"
+authors = [
+    { name = "Niclas van Eyk", email = "niclas.eyk@gmail.com" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "alembic>=1.18.4",
+    "psycopg[binary]>=3.3.3",
+]
+
+[build-system]
+requires = ["uv_build>=0.11.4,<0.12.0"]
+build-backend = "uv_build"

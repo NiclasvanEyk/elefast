@@ -1,8 +1,9 @@
-from elefast_example_fastapi_async.database import DatabaseContext
-from fastapi import Depends, Request, FastAPI
 from typing import Annotated
 
+from fastapi import Depends, FastAPI, Request
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
+
+from elefast_example_fastapi_async.database import DatabaseContext
 
 
 # This relies on the logic in the lifespan

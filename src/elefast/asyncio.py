@@ -1,24 +1,46 @@
 from __future__ import annotations
-from typing import Self, TypeAlias
 
 import time
 from asyncio import sleep
 from collections.abc import Callable
 from contextlib import AbstractAsyncContextManager
+from typing import Protocol, Self, TypeAlias
 from uuid import uuid4
 
 from sqlalchemy import URL, MetaData, NullPool, text
-from sqlalchemy.schema import CreateSchema
 from sqlalchemy.ext.asyncio import (
+    AsyncConnection,
     AsyncEngine,
     AsyncSession,
     async_sessionmaker,
     create_async_engine,
 )
+from sqlalchemy.schema import CreateSchema
 
 from elefast.errors import DatabaseNotReadyError
 
 CanBeTurnedIntoAsyncEngine: TypeAlias = "AsyncEngine | URL | str"
+
+
+class AsyncMigrator(Protocol):
+    async def migrate_async(self, connection: AsyncConnection) -> None:
+        pass
+
+
+class AsyncMetadataMigrator(AsyncMigrator):
+    def __init__(self, metadata: MetaData) -> None:
+        self._metadata = metadata
+
+    async def migrate_async(self, connection: AsyncConnection) -> None:
+        schemas = {
+            table.schema
+            for table in self._metadata.tables.values()
+            if table.schema is not None and table.schema != "public"
+        }
+        for schema in schemas:
+            await connection.execute(CreateSchema(schema, if_not_exists=True))
+        await connection.run_sync(self._metadata.drop_all)
+        await connection.run_sync(self._metadata.create_all)
 
 
 class AsyncDatabase(AbstractAsyncContextManager):
@@ -53,9 +75,9 @@ class AsyncDatabase(AbstractAsyncContextManager):
 
 class AsyncDatabaseServer:
     def __init__(
-        self, engine: CanBeTurnedIntoAsyncEngine, metadata: MetaData | None = None
+        self, engine: CanBeTurnedIntoAsyncEngine, schema: AsyncMigrator | None = None
     ) -> None:
-        self._metadata = metadata
+        self._migrator = schema
         self._engine = _build_engine(engine)
         self._template_db_name: str | None = None
 
@@ -92,19 +114,10 @@ class AsyncDatabaseServer:
             engine = await _prepare_async_database(
                 self._engine, encoding=encoding, prefix="elefast-template-db"
             )
-            if self._metadata:
+            if self._migrator:
                 async with engine.begin() as connection:
-                    schemas = {
-                        table.schema
-                        for table in self._metadata.tables.values()
-                        if table.schema is not None and table.schema != "public"
-                    }
-                    for schema in schemas:
-                        await connection.execute(
-                            CreateSchema(schema, if_not_exists=True)
-                        )
-                    await connection.run_sync(self._metadata.drop_all)
-                    await connection.run_sync(self._metadata.create_all)
+                    await self._migrator.migrate_async(connection)
+                    await connection.commit()
             await engine.dispose()
             template_db = engine.url.database
             assert isinstance(template_db, str)

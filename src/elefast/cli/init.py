@@ -61,17 +61,20 @@ def _init_command(
     maybe_async = "async " if use_async else ""
     maybe_await = "await " if use_async else ""
     fixture_module = "pytest_asyncio" if use_async else "pytest"
+
+    # TODO: Only import docker extra if added!
     template = f'''
 import os
     
 import pytest
-from elefast import {class_prefix}Database, {class_prefix}DatabaseServer, docker
+from elefast import {class_prefix}Database, {class_prefix}DatabaseServer, 
+from elefat.extras import docker
 
 
 @pytest.fixture(scope="session"{', loop_scope="session"' if use_async else ""})
 {maybe_async}def db_server() -> {class_prefix}DatabaseServer:
     explicit_url = os.getenv("TESTING_DB_URL")
-    db_url = explicit_url if explicit_url else docker.postgres("{driver}")
+    db_url = explicit_url or docker.postgres("{driver}")
     # If you have a shared Base-class, import it above and use
     # `metadata=YourBaseClass.metadata` below.
     server = {class_prefix}DatabaseServer(db_url, metadata=None)

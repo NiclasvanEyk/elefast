@@ -1,12 +1,14 @@
 """Integration tests for elefast - testing full workflows."""
 
-from unittest.mock import MagicMock, patch, AsyncMock
+from unittest.mock import AsyncMock, MagicMock, patch
+
 import pytest
 from sqlalchemy import text
 
-from elefast import DatabaseServer, Database, AsyncDatabaseServer, AsyncDatabase
-from elefast.docker.integration import postgres
-from elefast.docker.configuration import Configuration, Credentials
+from elefast import AsyncDatabase, AsyncDatabaseServer, Database, DatabaseServer
+from elefast.extras.docker.configuration import Configuration, Credentials
+from elefast.extras.docker.integration import postgres
+from elefast.sync import MetadataMigrator
 
 
 class TestDatabaseWorkflowSync:
@@ -88,7 +90,7 @@ class TestDatabaseWorkflowSync:
         mock_template_engine.begin.return_value.__exit__ = MagicMock(return_value=False)
 
         server = DatabaseServer(
-            engine=mock_engine, metadata=sample_metadata_with_schema
+            engine=mock_engine, schema=MetadataMigrator(sample_metadata_with_schema)
         )
         _ = server.create_database(prefix="elefast")
 
@@ -166,9 +168,9 @@ class TestDatabaseWorkflowAsync:
 class TestDockerIntegration:
     """Tests for Docker integration module."""
 
-    @patch("elefast.docker.integration.DockerClient")
-    @patch("elefast.docker.integration.ensure_db_server_started")
-    @patch("elefast.docker.integration.FileLock")
+    @patch("elefast.extras.docker.integration.DockerClient")
+    @patch("elefast.extras.docker.integration.ensure_db_server_started")
+    @patch("elefast.extras.docker.integration.FileLock")
     def test_postgres_function_returns_url(
         self, mock_filelock, mock_ensure, mock_docker_client
     ):
@@ -184,9 +186,9 @@ class TestDockerIntegration:
         assert result.username == "postgres"
         assert result.password == "elefast"
 
-    @patch("elefast.docker.integration.DockerClient")
-    @patch("elefast.docker.integration.ensure_db_server_started")
-    @patch("elefast.docker.integration.FileLock")
+    @patch("elefast.extras.docker.integration.DockerClient")
+    @patch("elefast.extras.docker.integration.ensure_db_server_started")
+    @patch("elefast.extras.docker.integration.FileLock")
     def test_postgres_with_custom_config(
         self, mock_filelock, mock_ensure, mock_docker_client
     ):
@@ -206,9 +208,9 @@ class TestDockerIntegration:
         assert result.password == "secret"
         assert result.host == "0.0.0.0"
 
-    @patch("elefast.docker.integration.DockerClient")
-    @patch("elefast.docker.integration.ensure_db_server_started")
-    @patch("elefast.docker.integration.FileLock")
+    @patch("elefast.extras.docker.integration.DockerClient")
+    @patch("elefast.extras.docker.integration.ensure_db_server_started")
+    @patch("elefast.extras.docker.integration.FileLock")
     def test_postgres_uses_file_lock(
         self, mock_filelock_class, mock_ensure, mock_docker_client
     ):

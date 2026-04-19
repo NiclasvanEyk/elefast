@@ -2,7 +2,7 @@
 
 import pytest
 
-from elefast.errors import ElefastError, DatabaseNotReadyError
+from elefast.errors import DatabaseNotReadyError, ElefastError
 
 
 class TestElefastError:

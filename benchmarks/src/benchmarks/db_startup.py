@@ -7,11 +7,11 @@ from dataclasses import dataclass, replace
 import psycopg2
 from docker import DockerClient
 
-from elefast.docker.configuration import Configuration, Optimizations
-from elefast.docker.orchestration import (
+from elefast.extras.docker.configuration import Configuration, Optimizations
+from elefast.extras.docker.orchestration import (
     ensure_db_server_started,
-    get_docker,
     get_db_server_container,
+    get_docker,
 )
 
 
@@ -93,7 +93,7 @@ def benchmark_startup_config(
 
     # Measure startup time
     start = time.time()
-    container, host_port = ensure_db_server_started(
+    _container, host_port = ensure_db_server_started(
         docker=docker,
         config=config,
         keep_container_around=True,

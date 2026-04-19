@@ -1,11 +1,18 @@
 """Tests for the elefast.sync module."""
 
 from unittest.mock import MagicMock, patch
+
 import pytest
 from sqlalchemy import URL
 
-from elefast.sync import Database, DatabaseServer, _build_engine, _prepare_database
 from elefast.errors import DatabaseNotReadyError
+from elefast.sync import (
+    Database,
+    DatabaseServer,
+    MetadataMigrator,
+    _build_engine,
+    _prepare_database,
+)
 
 
 class TestBuildEngine:
@@ -215,7 +222,9 @@ class TestDatabaseServerCreateDatabase:
         mock_new_engine.url.database = "elefast-db-123"
         mock_prepare.return_value = mock_new_engine
 
-        server = DatabaseServer(engine=mock_engine, metadata=sample_metadata)
+        server = DatabaseServer(
+            engine=mock_engine, schema=MetadataMigrator(sample_metadata)
+        )
         db = server.create_database(prefix="elefast-db")
 
         assert isinstance(db, Database)
@@ -231,7 +240,9 @@ class TestDatabaseServerCreateDatabase:
         mock_new_engine.url.database = "elefast-db-123"
         mock_prepare.return_value = mock_new_engine
 
-        server = DatabaseServer(engine=mock_engine, metadata=sample_metadata)
+        server = DatabaseServer(
+            engine=mock_engine, schema=MetadataMigrator(metadata=sample_metadata)
+        )
 
         # First database - creates template
         _ = server.create_database(prefix="elefast-db")

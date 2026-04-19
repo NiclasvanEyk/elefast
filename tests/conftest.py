@@ -1,9 +1,10 @@
 """Shared fixtures and mocks for elefast tests."""
 
 from collections.abc import Generator
-from unittest.mock import MagicMock, AsyncMock
+from unittest.mock import AsyncMock, MagicMock
+
 import pytest
-from sqlalchemy import URL, Engine, MetaData, Table, Column, Integer, String
+from sqlalchemy import URL, Column, Engine, Integer, MetaData, String, Table
 from sqlalchemy.ext.asyncio import AsyncEngine
 
 

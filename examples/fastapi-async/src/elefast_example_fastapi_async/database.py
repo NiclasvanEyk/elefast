@@ -1,12 +1,13 @@
 from dataclasses import dataclass
 from os import getenv
-from sqlalchemy.orm import MappedAsDataclass, DeclarativeBase, mapped_column, Mapped
+
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
-    async_sessionmaker,
     AsyncSession,
+    async_sessionmaker,
     create_async_engine,
 )
+from sqlalchemy.orm import DeclarativeBase, Mapped, MappedAsDataclass, mapped_column
 
 
 @dataclass

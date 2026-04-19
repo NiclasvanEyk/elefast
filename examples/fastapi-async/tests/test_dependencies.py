@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock
-import pytest
 
+import pytest
 from elefast_example_fastapi_async.database import DatabaseContext
 from elefast_example_fastapi_async.dependencies import get_db_context, get_engine
 

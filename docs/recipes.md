@@ -19,7 +19,8 @@ Again we can use environment variables:
 
 ```python title="tests/conftest.py"
 import os
-from elefast import DatabaseServer, Database, docker
+from elefast import DatabaseServer, Database,
+from elefast.extras import docker
 
 @pytest.fixture(scope="session")
 def db_server() -> DatabaseServer:
