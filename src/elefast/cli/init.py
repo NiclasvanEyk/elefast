@@ -134,9 +134,7 @@ def _figure_out_if_we_should_use_async(
     if async_preference == []:
         if driver in STRICTLY_ASYNC_DRIVERS:
             return True
-        elif driver in STRICTLY_SYNC_DRIVERS:
-            return False
-        elif not allow_interaction:
+        elif driver in STRICTLY_SYNC_DRIVERS or not allow_interaction:
             return False
         else:
             print("Are you intending to use asyncio? [y/N]: ", file=stderr)

@@ -127,7 +127,7 @@ class DatabaseServer:
         return self._engine.url
 
     def ensure_is_ready(
-        self, timeout: int | float = 30, interval: int | float = 0.5
+        self, timeout: float = 30, interval: float = 0.5
     ) -> Self:
         deadline = time.monotonic() + timeout
         attempts = 0
