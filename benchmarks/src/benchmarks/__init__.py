@@ -1,1 +1,0 @@
-"""Benchmarking suite for elefast."""
