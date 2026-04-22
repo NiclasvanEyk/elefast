@@ -56,7 +56,7 @@ class AsyncDatabase(AbstractAsyncContextManager):
         self.server = server
         self.sessionmaker = sessionmaker_factory(self.engine)
         assert self.engine.url.database
-        self.name = self.engine.url.database
+        self._name = self.engine.url.database
 
     async def __aexit__(self, exc_type, exc, tb):
         await self.drop()
@@ -64,6 +64,10 @@ class AsyncDatabase(AbstractAsyncContextManager):
     @property
     def url(self) -> URL:
         return self.engine.url
+
+    @property
+    def name(self) -> str:
+        return self._name
 
     async def drop(self) -> None:
         await self.engine.dispose()

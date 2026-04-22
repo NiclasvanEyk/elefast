@@ -16,15 +16,28 @@ CanBeTurnedIntoEngine: TypeAlias = "Engine | URL | str"
 
 
 class Migrator(Protocol):
+    """
+    Defines how the database schema is created.
+    """
+
     def migrate(self, connection: Connection) -> None:
-        pass
+        """
+        Creates the database schema for the passed `connection`.
+        """
 
 
 class MetadataMigrator(Migrator):
+    """
+    Creates the database schema based on `sqlalchemy.MetaData`.
+    """
+
     def __init__(self, metadata: MetaData) -> None:
         self._metadata = metadata
 
     def migrate(self, connection: Connection) -> None:
+        """
+        Drops and creates all tables specified in the `metadata` object passed via the constructor.
+        """
         schemas = {
             table.schema
             for table in self._metadata.tables.values()
@@ -37,30 +50,64 @@ class MetadataMigrator(Migrator):
 
 
 class Database(AbstractContextManager):
+    """
+    A Postgres database.
+    """
+
     def __init__(
         self,
         engine: Engine,
         server: DatabaseServer,
         sessionmaker_factory: Callable[[Engine], Callable[[], Session]] = sessionmaker,
     ) -> None:
+        """
+        Note that this is usually obtained from [`DatabaseServer.create_database()`][DatabaseServer.create_database]
+        and you should not need to construct it yourself.
+
+        Params:
+            engine: the engine holding the connections to the specific database.
+            server: a reference to the database server that created the database.
+            sessionmaker_factory: allows you to set custom options for the [`Database.session()`][Database.session] utility.
+        """
         self.engine = engine
         self.server = server
         self.sessionmaker = sessionmaker_factory(self.engine)
         assert self.engine.url.database
-        self.name = self.engine.url.database
+        self._name = self.engine.url.database
 
     def __exit__(self, exc_type, exc, tb):
         self.drop()
 
     @property
     def url(self) -> URL:
+        """
+        The engine URL, allowing you to create your own engines with custom options.
+        """
         return self.engine.url
 
+    @property
+    def name(self) -> str:
+        """
+        The name of the database.
+        """
+        return self._name
+
     def drop(self) -> None:
+        """
+        Disposes the engine and drops the database.
+
+        If you for some reason do not use this class as a context manager, use this to clean up
+        when you don't need it anymore.
+        """
         self.engine.dispose()
         self.server.drop_database(self.name)
 
     def session(self) -> Session:
+        """
+        Creates a new ORM session.
+
+        You can use the `sessionmaker_factory` parameter of the constructor to customize options.
+        """
         return self.sessionmaker()
 
 
