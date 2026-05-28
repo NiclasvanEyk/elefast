@@ -1,5 +1,11 @@
 # Elefast 🐘⚡
 
+![current package version](https://img.shields.io/pypi/v/elefast)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/elefast)
+![supported Python versions](https://img.shields.io/pypi/pyversions/elefast)
+![github sponsors](https://img.shields.io/github/sponsors/NiclasvanEyk)
+![license](https://img.shields.io/github/license/NiclasvanEyk/elefast)
+
 Using an actual database for testing is nice, but setting everything up can be a pain.
 Generating the schema, isolating the state, and supporting parallel execution while keeping everything reasonably quick.
 Elefast helps you by providing utilities for all of these tasks
