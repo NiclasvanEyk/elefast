@@ -11,6 +11,7 @@
 site_name = "Elefast"
 site_description = "Database testing toolkit integrating Postgres, SQLAlchemy, Pytest and Docker"
 site_author = "Niclas van Eyk"
+site_url = "https://elefast.niclasve.me"
 
 repo_url = "https://github.com/NiclasvanEyk/elefast"
 repo_name = "NiclasvanEyk/elefast"
