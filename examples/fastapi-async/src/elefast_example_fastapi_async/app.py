@@ -1,18 +1,22 @@
 from contextlib import asynccontextmanager
+from typing import AsyncIterator, TypedDict
 
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from sqlalchemy import select
 
-from elefast_example_fastapi_async.database import Post, get_db
+from elefast_example_fastapi_async.database import DatabaseContext, Post, get_db
 from elefast_example_fastapi_async.dependencies import DbSessionDep
 
 
+class LifespanState(TypedDict):
+    database: DatabaseContext
+
+
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(app: FastAPI) -> AsyncIterator[LifespanState]:
     db = get_db()
-    app.state.database = db
-    yield
+    yield {"database": db}
     await db.engine.dispose()
 
 

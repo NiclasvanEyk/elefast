@@ -8,10 +8,7 @@ from elefast_example_fastapi_async.database import DatabaseContext
 
 # This relies on the logic in the lifespan
 def get_db_context(request: Request) -> DatabaseContext:
-    app = request.app
-    if not isinstance(app, FastAPI):
-        raise TypeError()
-    database = app.state.database
+    database = request.state.database
     if not isinstance(database, DatabaseContext):
         raise TypeError()
     return database
