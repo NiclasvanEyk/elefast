@@ -1,0 +1,29 @@
+{
+  "name": "mise",
+  "build": {
+    "context": "..",
+    "dockerfile": "Dockerfile"
+  },
+  "features": {
+    "ghcr.io/devcontainers-extra/features/mise:1": {},
+    "ghcr.io/devcontainers/features/docker-in-docker:3": {
+      "moby": false
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "hverlin.mise-vscode",
+        "tombi-toml.tombi",
+        "astral-sh.ty"
+      ]
+    }
+  },
+  "remoteUser": "vscode",
+  "postCreateCommand": "mise trust mise.toml && mise run setup",
+  "remoteEnv": {
+    "PATH": "${containerEnv:PATH}:/home/vscode/.local/share/mise/shims"
+  },
+  "mounts": [],
+  "containerEnv": {}
+}

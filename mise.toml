@@ -1,0 +1,22 @@
+[tools]
+uv = "latest"
+
+[settings]
+idiomatic_version_file_enable_tools = ["python"]
+python.uv_venv_auto = "source"
+
+[tasks.setup]
+description = "Syncs all dependencies"
+run = ["mise install", "uv sync --all-packages --all-extras --frozen"]
+
+[tasks.docs]
+description = "Serves the documentation locally"
+run = "uv run zensical serve"
+
+[tasks.test]
+description = "Runs all pytest tests. Requires Docker!"
+run = "uv run pytest -n auto"
+
+[tasks.check]
+description = "Applies automated fixes and formatting, then runs static analysis and type checking"
+run = ["ruff check --fix", "ruff format", "ty check"]
